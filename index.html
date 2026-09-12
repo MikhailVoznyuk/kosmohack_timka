@@ -309,6 +309,18 @@
   .figs-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; }
   .split > *, .figs-2 > *, .big-fig > *, .grid > * { min-width: 0; }
 
+
+  /* hero figure layout: big screenshot + narrow text column */
+  .hero { display: grid; grid-template-columns: 1fr 400px; gap: 34px; flex: 1; min-height: 0; align-items: start; }
+  .hero.rev { grid-template-columns: 400px 1fr; }
+  .hero h2 { font-size: 30px; margin-bottom: 14px; }
+  .hero ul.check li { font-size: 16px; gap: 10px; }
+  .hero ul.check li .ev { font-size: 13.5px; }
+  .hero ul.clean li { font-size: 16px; }
+  .hero .lead { font-size: 18px; margin-bottom: 16px; }
+  .hero .panel { padding: 14px 16px; }
+  .figs-2.wide { grid-template-columns: 1fr 1fr; gap: 14px 16px; }
+
   /* final */
   .final { justify-content: center; }
   .final h2 { font-size: 56px; }
@@ -347,7 +359,7 @@
     <span class="chip">шлюз <b>Мурманск</b> · клиенты C65 · C70 · C72</span>
   </div>
   <div class="live rise"><span class="dot"></span>На фоне — живой расчёт по формулам «Описания данных»: орбиты, межспутниковые линии и маршруты до шлюза перестраиваются на каждом кадре.</div>
-  <aside class="notes">0:00. «Мы строили не калькулятор покрытия, а рабочее место инженера: дойдут ли данные до шлюза, почему нет, что с этим делать и сколько это стоит». На фоне — та же модель, что в ядре.</aside>
+  <aside class="notes"><b>0:00</b> Здравствуйте. Мы — команда Constellation Resilience Lab. Мы сделали рабочее место инженера спутниковой группировки: оно считает доступность связи для северных пунктов, объясняет каждый перерыв, подбирает конфигурацию и показывает, сколько она стоит. То, что вы видите на фоне, — наша же модель, она считается прямо сейчас.</aside>
 </section>
 
 <!-- 2. THESIS -->
@@ -369,7 +381,7 @@
       <figure class="fig rise" style="margin-top:18px"><div class="frame"><img src="img/crop_timeline04.jpg" alt="Временная шкала сценария 04: красные интервалы — разрыв спутниковой сети"></div><figcaption><b>Временная шкала сценария 04.</b> Красное — разрыв межспутниковой сети, жёлтое — нет контакта со шлюзом</figcaption></figure>
     </div>
   </div>
-  <aside class="notes">0:10. Главный вывод кейса: видимость 99,86 %, доступность 62,22 %. Из 272 отсчётов без пути 263 — разрыв сети. Это геометрия, не ошибка маршрутизации — следующий слайд.</aside>
+  <aside class="notes"><b>0:15</b> Главное, что мы поняли в кейсе: спутник над головой — ещё не связь. При дальности межспутниковой линии две тысячи километров пункт C70 видит спутник 99,86 % времени, а маршрут до шлюза существует только 62 %. Из 272 отсчётов без связи 263 — это разрыв сети между спутниками.</aside>
 </section>
 
 <!-- 3. ISL INTERACTIVE -->
@@ -392,7 +404,7 @@
       </ul>
     </div>
   </div>
-  <aside class="notes">0:30. Нажать «ISL 2000 км»: кольца внутри плоскостей гаснут, маршрутов меньше. Хорда 2700,44 км — ответ, почему никакое фазирование не спасает.</aside>
+  <aside class="notes"><b>0:35</b> Причина геометрическая. Соседи в плоскости стоят через 22,5 градуса, хорда между ними — 2700 километров. При двух тысячах линий внутри плоскости нет вообще, при любом фазировании. <i>[переключить на ISL 2000]</i> Сервис говорит это честно, вместо того чтобы подгонять красивую цифру.</aside>
 </section>
 
 <!-- 4. PRODUCT OVERVIEW -->
@@ -409,120 +421,106 @@
     <div class="panel"><span class="k">Экономика</span><h3>Сколько это стоит</h3><p>Смета по очередям, стоимость владения, сравнение носителей и цена одного процентного пункта доступности.</p></div>
   </div>
   <div class="flow rise"><span>docker compose up -d --build</span><i>→</i><span>стенд с загруженными сценариями</span><i>→</i><span>API и CLI для интеграции</span><i>→</i><span>выгрузка результата в формате кейса</span></div>
-  <aside class="notes">0:55. Карта продукта. Дальше идём по экранам, потом — что сверх ожиданий.</aside>
+  <aside class="notes"><b>0:55</b> Сам продукт — пять экранов: проекты, конструктор, сравнение, устойчивость, оптимизация, плюс экономика. Один расчётный центр на сервере, у интерфейса нет своей математики — поэтому каждое число воспроизводимо.</aside>
 </section>
 
 <!-- 5. CONSTRUCTOR -->
 <section class="slide" data-bg="off">
   <div class="eyebrow"><span class="crit chapter">Конструктор</span><span class="pts">настройка проекта</span></div>
-  <div class="split" style="grid-template-columns: 0.85fr 1.15fr">
+  <div class="hero">
+    <figure class="fig rise"><div class="frame"><img src="img/10_design_top.jpg" alt="Конструктор: сводка расчёта, очередь запуска, ориентация плоскостей"></div><figcaption><b>Конструктор после расчёта сценария «01 Полная группировка».</b> Сводка показателей, очередь запуска, ориентация плоскостей, состав проекта</figcaption></figure>
     <div>
-      <h2 class="rise">Весь проект настраивается в формах, без правки JSON</h2>
+      <h2 class="rise">Весь проект настраивается в формах</h2>
       <ul class="check rise">
-        <li><span class="tick">✓</span><div><b>Очередь запуска</b> Р1 / Р2 / Р3 одним переключателем — незапущенные аппараты остаются на сцене, но не участвуют в связях.</div></li>
-        <li><span class="tick">✓</span><div><b>Ориентация и фазирование</b> каждой плоскости — ползунок с шагом 0,1° и числовое поле; черновик показывает «было → стало».</div></li>
-        <li><span class="tick">✓</span><div><b>Отказы аппаратов</b> — из списка или прямо с карточки на сцене: интервал, число затронутых отсчётов.</div></li>
-        <li><span class="tick">✓</span><div><b>Итог сразу под кнопкой</b>: худшая доступность и её пункт, максимальный перерыв, средняя доступность, статус ориентира 90 %.</div></li>
-        <li><span class="tick">✓</span><div><b>Ничего не теряется</b> — правка создаёт новую версию, прежний расчёт доступен для сравнения; сброс черновика возвращает к сохранённой.</div></li>
+        <li><span class="tick">✓</span><div><b>Очередь запуска</b> Р1 / Р2 / Р3 одним переключателем.</div></li>
+        <li><span class="tick">✓</span><div><b>Ориентация и фазирование</b> каждой плоскости — ползунок с шагом 0,1° и числовое поле.</div></li>
+        <li><span class="tick">✓</span><div><b>Отказы аппаратов</b> — из списка или прямо с карточки на сцене.</div></li>
+        <li><span class="tick">✓</span><div><b>Итог сразу под кнопкой</b>: худшая доступность, максимальный перерыв, статус ориентира 90 %.</div></li>
+        <li><span class="tick">✓</span><div><b>Ничего не теряется</b> — правка создаёт новую версию, прежний расчёт остаётся для сравнения.</div></li>
       </ul>
     </div>
-    <figure class="fig rise"><div class="frame"><img src="img/10_design_top.jpg" alt="Конструктор: сводка расчёта, очередь запуска, ориентация плоскостей"></div><figcaption><b>Конструктор, сценарий «01 Полная группировка» после расчёта.</b> Сводка показателей, очередь запуска, ориентация плоскостей, состав проекта</figcaption></figure>
   </div>
-  <aside class="notes">1:15. На стенде: открыть 01, нажать «Рассчитать», показать сводку. Затем переключить очередь на Р1 — числа падают до 27 %.</aside>
+  <aside class="notes"><b>1:10</b> В конструкторе всё настраивается формами: очередь запуска, ориентация и фазирование плоскостей, отказы аппаратов. Итог — сразу под кнопкой. Каждая правка — новая версия проекта, старый расчёт не теряется.</aside>
 </section>
 
 <!-- 6. SCENE -->
 <section class="slide" data-bg="off">
   <div class="eyebrow"><span class="crit chapter">Конструктор</span><span class="pts">сцена</span></div>
-  <div class="big-fig">
-    <figure class="fig rise"><div class="frame"><img src="img/71_fullscreen.jpg" alt="Полноэкранная сцена: аппараты со свечением, орбиты плоскостей, плашка временной шкалы"></div><figcaption><b>Полноэкранный режим по клавише F.</b> Модель аппарата со свечением, орбиты плоскостей, шлейфы, плашка временной шкалы с дорожкой выбранного клиента</figcaption></figure>
+  <div class="hero">
+    <figure class="fig rise"><div class="frame"><img src="img/71_fullscreen.jpg" alt="Полноэкранная сцена: аппараты, орбиты плоскостей, плашка временной шкалы"></div><figcaption><b>Полноэкранный режим по клавише F.</b> Модель аппарата, орбиты плоскостей, свечение, плашка временной шкалы с дорожкой выбранного клиента</figcaption></figure>
     <div>
-      <h2 class="rise" style="font-size:36px">Сцена показывает ровно то, что посчитано</h2>
+      <h2 class="rise">Сцена показывает ровно то, что посчитано</h2>
       <ul class="check rise">
-        <li><span class="tick">✓</span><div><b>3D-сфера и плоская карта</b> — один и тот же расчёт, переключение в один клик. Без WebGL — векторная сцена и таблица.</div></li>
-        <li><span class="tick">✓</span><div><b>Состояние читается формой</b>, а не только цветом: активный залит, незапущенный контурный, отказавший перечёркнут.</div></li>
-        <li><span class="tick">✓</span><div><b>Маршрут и контакты клиента</b> по умолчанию, полный граф — по желанию. Между отсчётами линия никогда не выдаётся за доказанную.</div></li>
-        <li><span class="tick">✓</span><div><b>Клик по узлу</b> — карточка с данными и действиями: отказ с текущего отсчёта, выбор клиента, зона видимости на карте.</div></li>
+        <li><span class="tick">✓</span><div><b>3D-сфера и плоская карта</b> — один расчёт, переключение в один клик. Без WebGL — векторная сцена и таблица.</div></li>
+        <li><span class="tick">✓</span><div><b>Состояние читается формой</b>: активный залит, незапущенный контурный, отказавший перечёркнут.</div></li>
+        <li><span class="tick">✓</span><div><b>Маршрут и контакты клиента</b> по умолчанию, полный граф — по желанию.</div></li>
+        <li><span class="tick">✓</span><div><b>Клик по узлу</b> — карточка с данными и действиями: отказ с текущего отсчёта, выбор клиента, зона видимости.</div></li>
       </ul>
     </div>
   </div>
-  <aside class="notes">1:30. Одна фраза про честность визуализации: сфера модельная, координаты из ядра, никакой подмены геометрии.</aside>
+  <aside class="notes"><b>1:25</b> Сцена показывает ровно то, что посчитано: сфера и карта, маршрут выбранного клиента, состояние аппарата читается формой, а не только цветом. Полный экран — одной клавишей.</aside>
 </section>
 
 <!-- 7. TIMELINE & GAPS -->
 <section class="slide" data-bg="off">
   <div class="eyebrow"><span class="crit chapter">Конструктор</span><span class="pts">временная шкала и разрывы</span></div>
-  <div class="split" style="grid-template-columns: 0.9fr 1.1fr">
+  <div class="hero">
+    <figure class="fig rise"><div class="frame"><img src="img/62_scene_isl_gap.jpg" alt="Сцена: C70 видит один аппарат, но пути до шлюза нет"></div><figcaption><b>Сценарий 04, клиент C70, отсчёт 20.</b> Контакт с аппаратом есть, пути до шлюза нет: разрыв межспутниковой сети. Карточка узла и карточка отсчёта с причиной</figcaption></figure>
     <div>
       <h2 class="rise">Каждый перерыв объяснён — и проверен</h2>
       <ul class="check rise">
-        <li><span class="tick">✓</span><div><b>Шкала с воспроизведением</b> 1× / 5× / 20×, шаг стрелками, такт ровно 250 мс по реальному времени; снимки подгружаются заранее — без задержек при перемотке.</div></li>
-        <li><span class="tick">✓</span><div><b>Диаграмма доступности</b> по каждому пункту: интервалы связи и перерывы, раскрашенные по причине.</div></li>
-        <li><span class="tick">✓</span><div><b>Четыре причины перерыва</b>: нет видимого аппарата, все шлюзы недоступны, нет контакта со шлюзом, разрыв межспутниковой сети. Основная причина всегда одна — время раскладывается без двойного счёта.</div></li>
-        <li><span class="tick">✓</span><div><b>Контрфактическая проверка</b>: при отказе ядро возвращает аппарат и проверяет, восстановится ли путь. Если нет — так и написано: одного аппарата недостаточно.</div></li>
+        <li><span class="tick">✓</span><div><b>Шкала</b> с воспроизведением 1× / 5× / 20× и диаграммой доступности по каждому пункту, раскрашенной по причине.</div></li>
+        <li><span class="tick">✓</span><div><b>Четыре причины</b>: нет видимого аппарата, все шлюзы недоступны, нет контакта со шлюзом, разрыв сети. Основная — всегда одна.</div></li>
+        <li><span class="tick">✓</span><div><b>Контрфактическая проверка</b>: ядро возвращает отказавший аппарат и проверяет, восстановится ли путь.</div></li>
         <li><span class="tick">✓</span><div><b>Резерв</b> — независимые входы клиента в сеть и предупреждение об общей точке отказа.</div></li>
       </ul>
-    </div>
-    <div>
-      <figure class="fig rise"><div class="frame"><img src="img/62_scene_isl_gap.jpg" alt="Сцена: C70 видит один аппарат, но пути до шлюза нет"></div><figcaption><b>Сценарий 04, клиент C70, отсчёт 20.</b> Контакт с аппаратом есть, пути до шлюза нет: разрыв межспутниковой сети</figcaption></figure>
-      <div class="grid cols-2" style="margin-top:16px; gap:16px">
-        <figure class="fig rise"><div class="frame"><img src="img/crop_gap_panel.jpg" alt="Карточка отсчёта: пути нет, основная причина"></div><figcaption><b>Карточка отсчёта.</b> Основная причина и разбор</figcaption></figure>
-        <div class="panel rise" style="padding:14px 16px"><div class="label">Маршрут на соседнем отсчёте k = 19</div><div class="num" style="font-size:14px; color:var(--ink-2); line-height:1.65">C70 → S30 · 1 695 км · 11,9°<br>S30 → S14 · ISL 1 703 км<br>S14 → G_MUR · 1 731 км · 11,3°<br><span class="muted">3 перехода · 5 130 км · ≥ 17,1 мс</span></div></div>
-      </div>
+      <div class="panel rise" style="margin-top:14px"><div class="label">Маршрут на соседнем отсчёте k = 19</div><div class="num" style="font-size:13.5px; color:var(--ink-2); line-height:1.6">C70 → S30 · 1 695 км · 11,9° &nbsp;·&nbsp; S30 → S14 · ISL 1 703 км<br>S14 → G_MUR · 1 731 км · 11,3° &nbsp;·&nbsp; <span class="muted">3 перехода · 5 130 км</span></div></div>
     </div>
   </div>
-  <aside class="notes">1:50. На стенде: задать отказ аппарату из маршрута, пересчитать, открыть «Разрыв». Ядро само проверило, вернёт ли этот аппарат связь.</aside>
+  <aside class="notes"><b>1:40</b> Шкала времени раскрашивает перерывы по причине — их четыре. Для разрыва сети видно, какие аппараты видит клиент и почему они не соединены. А при отказе ядро само проверяет, вернёт ли этот аппарат связь.</aside>
 </section>
 
 <!-- 8. COMPARISON -->
 <section class="slide" data-bg="off">
   <div class="eyebrow"><span class="crit chapter">Сравнение</span><span class="pts">выбор варианта</span></div>
-  <div class="split">
+  <div class="hero">
+    <figure class="fig rise"><div class="frame"><img src="img/30_comparison.jpg" alt="Экран сравнения двух расчётов"></div><figcaption><b>Экран «Сравнение».</b> Проверка сопоставимости, изменения конфигурации и разница показателей по каждому пункту в процентных пунктах</figcaption></figure>
     <div>
-      <h2 class="rise" style="font-size:38px">Сравнение показывает каждого клиента, а не средний процент</h2>
-      <div class="panel rise" style="padding:14px 18px">
-        <div class="label">Первая очередь → полная группировка · доступность, ориентир 90 % отмечен линией</div>
-        <div class="bars" style="gap:7px">
-          <div class="bar"><span class="n">C65 · Р3</span><span class="t"><i class="good" style="--w:96.67%"></i></span><span class="val">96,67 %</span></div>
-          <div class="bar"><span class="n">C65 · Р1</span><span class="t"><i class="bad" style="--w:27.22%"></i></span><span class="val">27,22 %</span></div>
-          <div class="bar"><span class="n">C70 · Р3</span><span class="t"><i class="good" style="--w:98.75%"></i></span><span class="val">98,75 %</span></div>
-          <div class="bar"><span class="n">C70 · Р1</span><span class="t"><i class="bad" style="--w:15.83%"></i></span><span class="val">15,83 %</span></div>
-          <div class="bar"><span class="n">C72 · Р3</span><span class="t"><i class="good" style="--w:98.89%"></i></span><span class="val">98,89 %</span></div>
-          <div class="bar"><span class="n">C72 · Р1</span><span class="t"><i class="bad" style="--w:12.64%"></i></span><span class="val">12,64 %</span></div>
+      <h2 class="rise">Каждый клиент, а не средний процент</h2>
+      <div class="panel rise">
+        <div class="label">Первая очередь → полная · ориентир 90 %</div>
+        <div class="bars" style="gap:8px">
+          <div class="bar"><span class="n">C65</span><span class="t"><i class="bad" style="--w:27.22%"></i></span><span class="val">27 → 97</span></div>
+          <div class="bar"><span class="n">C70</span><span class="t"><i class="bad" style="--w:15.83%"></i></span><span class="val">16 → 99</span></div>
+          <div class="bar"><span class="n">C72</span><span class="t"><i class="bad" style="--w:12.64%"></i></span><span class="val">13 → 99</span></div>
         </div>
-        <p class="small" style="margin-top:10px">Максимальный перерыв: 8 / 2 / 2 мин против <span class="bad num">572 / 658 / 796 мин</span>. Одна плоскость из трёх не держит связь на севере.</p>
+        <p class="small" style="margin-top:10px">Перерывы: 572 / 658 / 796 мин → 8 / 2 / 2 мин.</p>
       </div>
-      <ul class="clean rise" style="margin-top:14px; gap:8px">
-        <li>Сопоставимость проверяется автоматически: разные сетки, пункты или условия связи помечаются явно.</li>
-        <li>Рекомендация объяснена: минимум по клиентам → среднее → перерыв. Рост минимума не выдаётся за улучшение всех.</li>
+      <ul class="check rise" style="margin-top:14px">
+        <li><span class="tick">✓</span><div><b>Сопоставимость</b> проверяется автоматически: разные сетки или условия связи помечаются явно.</div></li>
+        <li><span class="tick">✓</span><div><b>Рекомендация объяснена</b>: минимум по клиентам → среднее → перерыв. Рост минимума не выдаётся за улучшение всех.</div></li>
       </ul>
     </div>
-    <figure class="fig rise"><div class="frame"><img src="img/30_comparison.jpg" alt="Экран сравнения двух расчётов"></div><figcaption><b>Экран «Сравнение».</b> Проверка сопоставимости, изменения конфигурации и разница показателей по каждому пункту</figcaption></figure>
   </div>
-  <aside class="notes">2:10. Переключить очередь на Р1, пересчитать, открыть «Сравнение»: видно изменённый параметр и падение 96,67 → 27,22 с перерывами в минутах.</aside>
+  <aside class="notes"><b>2:00</b> Сравнение — по каждому пункту, а не по среднему. Первая очередь против полной группировки: 27 против 97 процентов, перерывы — часы против минут.</aside>
 </section>
 
 <!-- 9. N-1 -->
 <section class="slide" data-bg="off">
   <div class="eyebrow"><span class="crit chapter">Устойчивость</span><span class="pts">отказ одного аппарата</span></div>
-  <div class="split">
+  <div class="hero">
+    <figure class="fig rise"><div class="frame"><img src="img/40_nminus1.jpg" alt="Экран «Устойчивость»: критичные аппараты и резервирование входа"></div><figcaption><b>«Устойчивость» → «Отказ одного аппарата».</b> Критичные аппараты с падением доступности, затронутые направления, резервирование входа в сеть по каждому пункту</figcaption></figure>
     <div>
       <h2 class="rise">Какие аппараты критичны — за 14 секунд</h2>
-      <p class="lead rise">Каждый запущенный аппарат по очереди исключается на весь горизонт — 48 контрфактических суток. Ранжирование по худшему пункту, а не по среднему.</p>
-      <div class="kpis rise">
+      <p class="lead rise">Каждый из 48 аппаратов по очереди исключается на весь горизонт. Ранжирование по худшему пункту, а не по среднему.</p>
+      <div class="kpis rise" style="grid-template-columns: 1fr">
         <div class="panel"><div class="stat"><span class="v bad">−2,36</span><span class="k">п.п. худший одиночный отказ · S19, S33, S44, S45 задевают все три направления</span></div></div>
         <div class="panel"><div class="stat"><span class="v good">94,31 %</span><span class="k">остаётся у худшего клиента — ни один отказ не опускает группировку ниже 90 %</span></div></div>
         <div class="panel"><div class="stat"><span class="v warn">67,4 %</span><span class="k">времени у C65 единственный вход в сеть — самый уязвимый пункт</span></div></div>
       </div>
-      <ul class="clean rise" style="margin-top:18px">
-        <li>Матрица «аппарат × клиент» и затронутые направления у каждого критичного аппарата.</li>
-        <li>Резервирование входа в сеть: доля времени с двумя независимыми входами по каждому пункту.</li>
-        <li>Карточка воспроизводима: тот же отказ, заданный вручную, даёт те же −2,36 п.п.</li>
-      </ul>
     </div>
-    <figure class="fig rise"><div class="frame"><img src="img/40_nminus1.jpg" alt="Экран «Устойчивость»: критичные аппараты и резервирование входа"></div><figcaption><b>«Устойчивость» → «Отказ одного аппарата».</b> Критичные аппараты, затронутые направления, резервирование входа в сеть</figcaption></figure>
   </div>
-  <aside class="notes">2:30. Ответ на вопрос «что сломается»: конкретные аппараты и конкретный пункт. Предложение по устойчивости — на слайде рекомендации.</aside>
+  <aside class="notes"><b>2:15</b> Устойчивость: за 14 секунд исключаем каждый из 48 аппаратов. Четыре аппарата задевают все три направления, но ниже 90 % группировку не опускает никто. Самый уязвимый пункт — C65: две трети времени у него единственный вход в сеть.</aside>
 </section>
 
 <!-- 10. TRUST -->
@@ -563,7 +561,7 @@
       <p class="small" style="margin-top:10px">✓ — совпадает с контрольной таблицей кейса. Политика «кратчайший по переходам», сетка 720 × 120 с.</p>
     </div>
   </div>
-  <aside class="notes">2:50. Числа проверяются на стенде за 20 секунд: открыть 01 → «Рассчитать» → 96,67 / 98,75 / 98,89.</aside>
+  <aside class="notes"><b>2:30</b> Числам можно верить: все 12 контрольных значений совпали до отсчёта, расхождение с эталонным модулем — десять в минус тринадцатой, 8640 маршрутов проверены независимым валидатором.</aside>
 </section>
 
 <!-- 11. ROUTING -->
@@ -629,32 +627,26 @@
       </svg>
     </div>
   </div>
-  <aside class="notes">3:05. Доступность — свойство сети, стратегия меняет только путь. Отсутствие пути при доказанной достижимости считаем ошибкой расчёта — такой результат не публикуется.</aside>
+  <aside class="notes"><b>2:45</b> Маршрут ищется волной от шлюза только по спутниковым линиям, наземный транзит запрещён. Три стратегии дают одну доступность — различаются только пути.</aside>
 </section>
 
 <!-- 12. DATA & INTEGRATION -->
 <section class="slide" data-bg="off">
   <div class="eyebrow"><span class="crit chapter">Данные и интеграция</span><span class="pts">свои сценарии, выгрузка, API</span></div>
-  <div class="split">
+  <div class="hero">
+    <figure class="fig rise"><div class="frame"><img src="img/01_projects.jpg" alt="Экран «Проекты»: исходные примеры и импорт сценария"></div><figcaption><b>Экран «Проекты».</b> Сценарии кейса только для чтения, импорт своего файла с проверкой и сводкой, список сохранённых проектов</figcaption></figure>
     <div>
-      <h2 class="rise">Работает с вашими данными, а не только с примерами</h2>
+      <h2 class="rise">Работает с вашими данными</h2>
       <ul class="check rise">
-        <li><span class="tick">✓</span><div><b>Любой сценарий схемы cosmo-A-1.0</b> — другое число плоскостей, аппаратов, пунктов, шаг и горизонт. Проверено: 10 аппаратов, 2 плоскости, 2 шлюза, шаг 300 с — считается и выгружается.</div></li>
-        <li><span class="tick">✓</span><div><b>Понятные ошибки</b> — поле, код и сообщение: environment.horizon_s, design.satellites[48].id, failures[0].end_s. Из 17 испорченных файлов 16 отклонены с указанием поля.</div></li>
-        <li><span class="tick">✓</span><div><b>Исходный файл не меняется</b>, неизвестные поля сохраняются; цикл «выгрузка → повторная загрузка» даёт тот же хеш и те же метрики.</div></li>
-        <li><span class="tick">✓</span><div><b>Выгрузка</b> результата в формате кейса cosmo-A-result-1.0, сводный CSV по клиентам, сценарий для повторной загрузки, паспорт эксперимента для воспроизведения.</div></li>
-        <li><span class="tick">✓</span><div><b>HTTP-API и командная строка</b> — расчёт, проверка выгрузки, снимок сети, подбор конфигурации без интерфейса; OpenAPI на /docs.</div></li>
+        <li><span class="tick">✓</span><div><b>Любой сценарий схемы cosmo-A-1.0</b> — другое число плоскостей, аппаратов, пунктов, шаг и горизонт.</div></li>
+        <li><span class="tick">✓</span><div><b>Понятные ошибки</b> — поле, код и сообщение. Из 17 испорченных файлов 16 отклонены с указанием поля.</div></li>
+        <li><span class="tick">✓</span><div><b>Исходный файл не меняется</b>; цикл «выгрузка → загрузка» даёт тот же хеш и те же метрики.</div></li>
+        <li><span class="tick">✓</span><div><b>Выгрузка</b> в формате кейса, CSV по клиентам, паспорт эксперимента для воспроизведения.</div></li>
+        <li><span class="tick">✓</span><div><b>HTTP-API и командная строка</b> — расчёт, проверка, подбор без интерфейса; OpenAPI на /docs.</div></li>
       </ul>
     </div>
-    <div>
-      <figure class="fig rise"><div class="frame"><img src="img/01_projects.jpg" alt="Экран «Проекты»: исходные примеры и импорт сценария"></div><figcaption><b>Экран «Проекты».</b> Сценарии кейса только для чтения, импорт своего файла с проверкой и сводкой</figcaption></figure>
-      <div class="panel rise" style="margin-top:16px; padding:14px 18px">
-        <div class="label">Ответ сервера на ошибку в файле</div>
-        <div class="num" style="font-size:13.5px; color:var(--ink-2); line-height:1.6">{"error":{"code":"schema_validation","issues":[{"path":"failures[2].satellite_id",<br>&nbsp;&nbsp;"code":"unknown_reference","message":"Спутник отсутствует в design.satellites"}]}}</div>
-      </div>
-    </div>
   </div>
-  <aside class="notes">3:25. На стенде: импортировать посторонний файл другой размерности — считается; загрузить битый — сообщение называет поле. Показать выгрузку результата.</aside>
+  <aside class="notes"><b>2:55</b> Сервис принимает любой сценарий той же схемы, называет поле в ошибке, выгружает результат в формате кейса и открыт по API.</aside>
 </section>
 
 <!-- 13. SCREENCAST MOCKUP -->
@@ -682,72 +674,71 @@
     </div>
     <p class="note">Тот же сервис на узком экране: панели конструктора собираются во вкладки, шкала и сцена остаются. Файлы video/desktop.mp4 и video/phone.mp4 подставляются автоматически.</p>
   </div>
-  <aside class="notes">3:40. Запасной вариант, если стенд или сеть подведут: скринкаст рабочего места и телефона.</aside>
+  <aside class="notes"><b>3:05</b> Так это выглядит в работе — и на телефоне тоже. <i>[дать видео 8–10 секунд]</i></aside>
 </section>
 
 <!-- 14. ANALYSES -->
 <section class="slide" data-bg="off">
   <div class="eyebrow"><span class="crit extra">Сверх ожиданий</span><span class="pts">пять анализов устойчивости</span></div>
-  <div class="split" style="grid-template-columns: 0.62fr 1.38fr">
+  <div class="hero rev" style="grid-template-columns: 300px 1fr">
     <div>
-      <h2 class="rise" style="font-size:36px">Что сломается, почему и где резерв</h2>
-      <ul class="clean rise">
-        <li><b>Кривая развёртывания.</b> Очередь 1 — 12,64 %, очередь 2 — 61,81 %, очередь 3 — 96,67 %: ориентир достигается только с третьей.</li>
-        <li><b>Стресс-набор.</b> Худший случай — отключение плоскости: 60,97 % и перерыв 5 ч 30 мин. Шлюз недоступен 6 часов — 71,67 %.</li>
-        <li><b>Стратегии маршрутизации.</b> Доступность совпала у всех трёх; путь по расстоянию короче на 161 км и даёт на 72 переключения меньше.</li>
-        <li><b>Развёртка по оси.</b> Одной плоскостью номинал не улучшить: размах всего 1,11 п.п. — нужен совместный подбор шести углов.</li>
-        <li>Все анализы — задания той же очереди с прогрессом и отменой.</li>
+      <h2 class="rise">Что сломается, почему и где резерв</h2>
+      <ul class="clean rise" style="gap:9px">
+        <li><b>Кривая развёртывания</b> — 12,64 → 61,81 → 96,67 %: ориентир достигается только с третьей очереди.</li>
+        <li><b>Стресс-набор</b> — худший случай отключение плоскости: 60,97 %, перерыв 5,5 ч.</li>
+        <li><b>Стратегии</b> — доступность одна, путь по расстоянию короче на 161 км.</li>
+        <li><b>Развёртка по оси</b> — одной плоскостью номинал не улучшить: размах 1,11 п.п.</li>
       </ul>
     </div>
-    <div class="figs-2 rise">
-      <figure class="fig"><div class="frame"><img src="img/42_deployment_curve.jpg" alt="Кривая развёртывания по очередям"></div><figcaption><b>Кривая развёртывания</b></figcaption></figure>
-      <figure class="fig"><div class="frame"><img src="img/44_stress.jpg" alt="Стресс-набор"></div><figcaption><b>Стресс-набор</b> · случайные отказы с зерном</figcaption></figure>
+    <div class="figs-2 wide rise">
+      <figure class="fig"><div class="frame"><img src="img/42_deployment_curve.jpg" alt="Кривая развёртывания по очередям"></div><figcaption><b>Кривая развёртывания</b> · Р1, Р2, Р3 на одной сетке</figcaption></figure>
+      <figure class="fig"><div class="frame"><img src="img/44_stress.jpg" alt="Стресс-набор"></div><figcaption><b>Стресс-набор</b> · плоскость, шлюз, соседи, случайные отказы</figcaption></figure>
       <figure class="fig"><div class="frame"><img src="img/43_policies.jpg" alt="Стратегии маршрутизации"></div><figcaption><b>Стратегии маршрутизации</b> · инвариант доступности</figcaption></figure>
-      <figure class="fig"><div class="frame"><img src="img/45_sweep.jpg" alt="Развёртка по фазе P1"></div><figcaption><b>Развёртка по оси</b> · фаза плоскости P1</figcaption></figure>
+      <figure class="fig"><div class="frame"><img src="img/45_sweep.jpg" alt="Развёртка по фазе P1"></div><figcaption><b>Развёртка по оси</b> · фаза плоскости P1, 24 точки</figcaption></figure>
     </div>
   </div>
-  <aside class="notes">3:50. Слайд-витрина: по вопросу открываем нужный анализ на стенде.</aside>
+  <aside class="notes"><b>3:15</b> Сверх задания: кривая развёртывания, стресс-набор, стратегии маршрутизации, развёртка по оси.</aside>
 </section>
 
 <!-- 15. TERRAIN -->
 <section class="slide" data-bg="dim">
   <div class="eyebrow"><span class="crit extra">Сверх ожиданий</span><span class="pts">локальный горизонт по рельефу</span></div>
-  <div class="split" style="grid-template-columns: 0.85fr 1.15fr">
+  <div class="hero">
+    <figure class="fig rise"><div class="frame"><img src="img/77_horizon_result_2.jpg" alt="Анализ «Локальный горизонт»: таблица с маской и без, диаграммы горизонта по азимутам"></div><figcaption><b>«Устойчивость» → «Локальный горизонт».</b> Показатели с маской и без; площадки по данным рельефа: высота, уклон, профиль горизонта по азимутам</figcaption></figure>
     <div>
       <h2 class="rise">Сопка на юге стоит 20 п.п. доступности</h2>
-      <p class="lead rise">У площадки есть свой горизонт. Сервис строит его по открытому рельефу SRTM в круге 30 км, по 360 азимутам, с поправкой на кривизну и рефракцию — и считает два прогона на одной сетке: без маски и с маской.</p>
       <ul class="check rise">
-        <li><span class="tick">✓</span><div><b>C65, Северный Урал</b> — высота 908 м, уклон 27°, горизонт до 32,8°: доступность 96,67 → <b class="bad">76,94 %</b>, перерыв 8 → 38 мин.</div></li>
-        <li><span class="tick">✓</span><div><b>Шлюз в Мурманске</b> — горизонт до 4,1°, показатели не меняются. <b>C72 в море Лаптевых</b> — открытый горизонт.</div></li>
-        <li><span class="tick">✓</span><div><b>Маска руками</b> — надбавка и секторы по азимуту, готовые профили «застройка», «сопки с юга», «долина».</div></li>
-        <li><span class="tick">✓</span><div><b>Основные показатели не меняются</b> — слой живёт только в этом анализе и не попадает в рекомендацию.</div></li>
+        <li><span class="tick">✓</span><div><b>Горизонт по открытому рельефу SRTM</b> в круге 30 км, по 360 азимутам, с поправкой на кривизну и рефракцию.</div></li>
+        <li><span class="tick">✓</span><div><b>C65, Северный Урал</b> — высота 908 м, горизонт до 32,8°: доступность 96,67 → <b class="bad">76,94 %</b>, перерыв 8 → 38 мин.</div></li>
+        <li><span class="tick">✓</span><div><b>Мурманск</b> и <b>море Лаптевых</b> — показатели не меняются: горизонт открыт.</div></li>
+        <li><span class="tick">✓</span><div><b>Маска руками</b> — надбавка и секторы, готовые профили «застройка», «сопки с юга», «долина».</div></li>
+        <li><span class="tick">✓</span><div><b>Основные показатели не меняются</b> — слой живёт только в этом анализе.</div></li>
       </ul>
     </div>
-    <figure class="fig rise"><div class="frame"><img src="img/77_horizon_result_2.jpg" alt="Анализ «Локальный горизонт»: таблица с маской и без, диаграммы горизонта по азимутам"></div><figcaption><b>«Устойчивость» → «Локальный горизонт».</b> Показатели с маской и без, площадки по данным рельефа: высота, уклон, профиль горизонта по азимутам</figcaption></figure>
   </div>
-  <aside class="notes">4:00. Кейсодержатели назвали рельеф желательным дополнением. Мы сделали его отдельным слоем: основные цифры прежние, а инженер видит реальный горизонт площадки.</aside>
+  <aside class="notes"><b>3:25</b> Локальный горизонт по реальному рельефу: сопка у C65 стоит двадцать процентных пунктов доступности. Основные цифры при этом не меняются.</aside>
 </section>
 
 <!-- 16. OPTIMIZATION -->
 <section class="slide" data-bg="dim">
   <div class="eyebrow"><span class="crit extra">Сверх ожиданий</span><span class="pts">автоподбор конфигурации</span></div>
-  <div class="split">
+  <div class="hero">
+    <figure class="fig rise"><div class="frame"><img src="img/51_optimization_result.jpg" alt="Экран «Оптимизация»: кандидаты, проверенные точным расчётом"></div><figcaption><b>Экран «Оптимизация».</b> Кандидаты с пометкой «проверен расчётом», параметры плоскостей, применение выбранного варианта новой версией проекта</figcaption></figure>
     <div>
-      <h2 class="rise" style="font-size:38px">Подбор ориентации и фазирования — с проверкой каждого кандидата</h2>
-      <ul class="clean rise">
-        <li>Стартовые точки по последовательности Соболя, затем <b>дифференциальная эволюция</b> на точном расчёте: бюджет 300 полных прогонов, фиксированное зерно, результат воспроизводим.</li>
-        <li>Меняются только шесть углов. Состав, пункты, высота, дальность и порог остаются как в исходном проекте — сервер это гарантирует.</li>
-        <li>Финалист перепроверяется на шаге 60 и 30 с и независимым валидатором. Кандидат применяется <b>отдельной версией проекта</b>, ничего не перезаписывается.</li>
-        <li><b>Парето-режим</b> — компромисс «доступность ↔ максимальный перерыв», когда одного критерия мало.</li>
+      <h2 class="rise">Подбор с проверкой каждого кандидата</h2>
+      <ul class="check rise">
+        <li><span class="tick">✓</span><div><b>Дифференциальная эволюция</b> на точном расчёте, 300 полных прогонов, фиксированное зерно — результат воспроизводим.</div></li>
+        <li><span class="tick">✓</span><div><b>Меняются только шесть углов</b>; состав, пункты и условия связи остаются как в проекте.</div></li>
+        <li><span class="tick">✓</span><div><b>Парето-режим</b> — компромисс «доступность ↔ перерыв».</div></li>
+        <li><span class="tick">✓</span><div><b>Кандидат применяется новой версией</b> — ничего не перезаписывается.</div></li>
       </ul>
-      <div class="grid cols-2 rise" style="margin-top:20px">
-        <div class="panel"><div class="label">Штатные условия · сценарий 01</div><div class="stat"><span class="v" style="font-size:40px"><span class="muted" style="font-size:24px">96,67 →</span> <span class="good" data-count="99.17" data-dec="2">0</span>&thinsp;%</span><span class="k">худший клиент · перерыв 8 → 2 мин · цель 90 % выполнена с запасом</span></div></div>
-        <div class="panel"><div class="label">ISL 2000 км при условии «штатный режим ≥ 90 %»</div><div class="stat"><span class="v" style="font-size:40px"><span class="muted" style="font-size:24px">62,22 →</span> <span class="accent" data-count="69.17" data-dec="2">0</span>&thinsp;%</span><span class="k">худший клиент · перерыв 178 → 80 мин · 33 допустимых варианта из 300</span></div></div>
+      <div class="kpis rise" style="grid-template-columns: 1fr; margin-top:14px">
+        <div class="panel"><div class="stat"><span class="v" style="font-size:34px"><span class="muted" style="font-size:20px">96,67 →</span> <span class="good" data-count="99.17" data-dec="2">0</span>&thinsp;%</span><span class="k">штатные условия · перерыв 8 → 2 мин</span></div></div>
+        <div class="panel"><div class="stat"><span class="v" style="font-size:34px"><span class="muted" style="font-size:20px">62,22 →</span> <span class="accent" data-count="69.17" data-dec="2">0</span>&thinsp;%</span><span class="k">ISL 2000 км при условии «штатный режим ≥ 90 %» · перерыв 178 → 80 мин</span></div></div>
       </div>
     </div>
-    <figure class="fig rise"><div class="frame"><img src="img/51_optimization_result.jpg" alt="Экран «Оптимизация»: кандидаты, проверенные точным расчётом"></div><figcaption><b>Экран «Оптимизация».</b> Кандидаты с пометкой «проверен расчётом», параметры плоскостей, применение выбранного варианта новой версией проекта</figcaption></figure>
   </div>
-  <aside class="notes">4:10. Внимание: на стенде поиск из интерфейса с зерном 20260911 и бюджетом 300 вернул базовый вариант — числа 98,33 / 99,17 % получены протоколами из docs/reports. Показывать сохранённый протокол или заранее прогнанный Study.</aside>
+  <aside class="notes"><b>3:35</b> Автоподбор ориентации и фазирования: 96,67 → 99,17 % в штатном режиме, каждый кандидат проверен полным расчётом.</aside>
 </section>
 
 <!-- 17. ML -->
@@ -773,13 +764,13 @@
       <div class="panel rise" style="margin-top:18px"><div class="label">Воспроизведение одной командой</div><div class="num" style="font-size:14px; color: var(--ink-2); line-height:1.7">constellation-optimize benchmark<br>&nbsp;&nbsp;--budget 48 --seeds 20260911 7 42<br>&nbsp;&nbsp;--methods exact gp catboost</div></div>
     </div>
   </div>
-  <aside class="notes">4:20. Если спросят про ML: показываем только с измерением — равный бюджет, три зерна. Гауссовский процесс выигрывает, CatBoost нет.</aside>
+  <aside class="notes"><b>3:45</b> ML-ускоритель измерен честно: выигрывает на коротком бюджете, остаётся отключаемым.</aside>
 </section>
 
 <!-- 18. ECONOMICS -->
 <section class="slide" data-bg="dim">
   <div class="eyebrow"><span class="crit extra">Сверх ожиданий</span><span class="pts">экономика программы</span></div>
-  <div class="split" style="grid-template-columns: 1fr 1fr; --fig-h: 560px">
+  <div class="split" style="grid-template-columns: 1.1fr 0.9fr; --fig-h: 640px">
     <div>
       <h2 class="rise">Сколько стоит эта группировка</h2>
       <p class="lead rise">Экономический слой поверх расчёта: состав, очереди и число пунктов берутся из проекта, цены задаёт инженер. На доступность и рекомендации не влияет.</p>
@@ -789,34 +780,34 @@
         <div class="panel"><div class="stat"><span class="v good">6,22</span><span class="k">млн $ за один процентный пункт доступности</span></div></div>
         <div class="panel"><div class="stat"><span class="v warn">472,0</span><span class="k">млн $ на попутном запуске Transporter · дешевле всех в каталоге</span></div></div>
       </div>
-      <ul class="check rise" style="margin-top:16px">
-        <li><span class="tick">✓</span><div><b>Серия аппаратов по закону Райта</b>: каждое удвоение выпуска удешевляет аппарат на 10 % — вторая и третья очереди дешевле первой.</div></li>
-        <li><span class="tick">✓</span><div><b>Выведение</b>: выделенный пуск с поправкой на наклонение 87° или попутный запуск по массе. Каталог из пяти носителей с источником и годом цены.</div></li>
-        <li><span class="tick">✓</span><div><b>Стоимость владения</b>: развёртывание, страхование, наземный сегмент, эксплуатация и пополнение за горизонт.</div></li>
+      <ul class="check rise" style="margin-top:14px">
+        <li><span class="tick">✓</span><div><b>Серия аппаратов по закону Райта</b>: каждое удвоение выпуска удешевляет аппарат на 10 %.</div></li>
+        <li><span class="tick">✓</span><div><b>Выведение</b>: выделенный пуск с поправкой на наклонение 87° или попутный запуск по массе; каталог из пяти носителей с источниками цен.</div></li>
+        <li><span class="tick">✓</span><div><b>Стоимость владения</b>: развёртывание, страхование, наземный сегмент, эксплуатация и пополнение.</div></li>
       </ul>
     </div>
-    <figure class="fig rise"><div class="frame tall"><img src="img/crop_budget.jpg" alt="Панель «Бюджет программы»: носитель, масса аппарата, стоимость владения, смета по очередям"></div><figcaption><b>Конструктор → «Бюджет программы».</b> Носитель, масса и цена первого аппарата, стоимость владения, смета по очередям и удельные показатели</figcaption></figure>
+    <figure class="fig rise"><div class="frame tall"><img src="img/crop_budget.jpg" alt="Панель «Бюджет программы»: носитель, масса аппарата, стоимость владения, смета по очередям"></div><figcaption><b>Конструктор → «Бюджет программы».</b> Носитель, масса и цена первого аппарата, стоимость владения, смета по очередям</figcaption></figure>
   </div>
-  <aside class="notes">4:30. Экономика — надстройка: в задании денег нет, поэтому она отделена и ничего не меняет в модели. Зато отвечает на вопрос заказчика «сколько стоит процент доступности».</aside>
+  <aside class="notes"><b>3:50</b> И экономика: 601 миллион долларов владения, 6,22 миллиона за процентный пункт доступности.</aside>
 </section>
 
 <!-- 19. SCENE EXTRAS -->
 <section class="slide" data-bg="off">
   <div class="eyebrow"><span class="crit extra">Сверх ожиданий</span><span class="pts">сцена, шкала, инженерия</span></div>
-  <div class="split" style="grid-template-columns: 1.1fr 0.9fr">
-    <figure class="fig rise"><div class="frame"><img src="img/70_scene_model.jpg" alt="Сцена со свечением аппаратов и орбитами плоскостей"></div><figcaption><b>Сцена конструктора.</b> Модель аппарата со свечением, орбиты плоскостей, зона интереса над северными пунктами</figcaption></figure>
+  <div class="hero">
+    <figure class="fig rise"><div class="frame"><img src="img/70_scene_model.jpg" alt="Сцена со свечением аппаратов и орбитами плоскостей"></div><figcaption><b>Конструктор: сцена и панель «Бюджет программы».</b> Модель аппарата со свечением, орбиты плоскостей, маршрут выбранного клиента; слева — смета по очередям и стоимость владения</figcaption></figure>
     <div>
-      <h2 class="rise" style="font-size:36px">Детали, которые делают работу удобной</h2>
+      <h2 class="rise">Детали, которые делают работу удобной</h2>
       <ul class="check rise">
-        <li><span class="tick">✓</span><div><b>Модель аппарата</b> с корпусом, панелями и антенной к Земле; шлейф орбиты и свечение, которое подсвечивает аппараты и линии, а не дневную Землю.</div></li>
-        <li><span class="tick">✓</span><div><b>Полный экран</b> по клавише F с плашкой шкалы: воспроизведение, часы, состояние связи, дорожка выбранного клиента.</div></li>
-        <li><span class="tick">✓</span><div><b>Пролёты</b> — расписание восходов, кульминаций и заходов по каждому пункту с уточнением между отсчётами.</div></li>
-        <li><span class="tick">✓</span><div><b>Инженерные выводы</b> с доказательством и переходом к нужному экрану; <b>паспорт эксперимента</b> — хеш, версия ядра, политика, сетка, зерно.</div></li>
-        <li><span class="tick">✓</span><div><b>Надёжность</b>: отмена действительно останавливает расчёт, прогресс потоком, повтор запроса не создаёт второй расчёт, «Сервис обновился» вместо пустой страницы.</div></li>
+        <li><span class="tick">✓</span><div><b>Модель аппарата</b> с панелями и антенной к Земле; шлейф орбиты и свечение, которое подсвечивает аппараты и линии, а не дневную Землю.</div></li>
+        <li><span class="tick">✓</span><div><b>Шкала по реальному времени</b> — такт 250 мс, снимки подгружаются заранее.</div></li>
+        <li><span class="tick">✓</span><div><b>Пролёты</b> — восходы, кульминации и заходы по каждому пункту.</div></li>
+        <li><span class="tick">✓</span><div><b>Инженерные выводы</b> с доказательством и переходом к экрану; <b>паспорт эксперимента</b> для воспроизведения.</div></li>
+        <li><span class="tick">✓</span><div><b>Надёжность</b>: отмена останавливает расчёт, прогресс потоком, повтор запроса не создаёт второй расчёт.</div></li>
       </ul>
     </div>
   </div>
-  <aside class="notes">4:40. Витрина деталей. По вопросу — открываем нужный экран.</aside>
+  <aside class="notes"><b>3:58</b> <i>[пролистать: «детали — по вопросам»]</i></aside>
 </section>
 
 <!-- 20. RECOMMENDATION -->
@@ -858,7 +849,7 @@
     <div class="label">Как повысить устойчивость — в порядке проверенности</div>
     <p style="color:var(--ink-2)">1&nbsp;·&nbsp;Применить найденное фазирование как новую ревизию. &nbsp;2&nbsp;·&nbsp;Держать резерв для S19 / S33 / S44 / S45 — они бьют по всем трём направлениям. &nbsp;3&nbsp;·&nbsp;Для C65 нужен второй независимый вход и проверка локального горизонта площадки (рельеф даёт до −19,72 п.п.): это следующий рычаг исследования, а не подмена дальности ISL или добавление шлюза.</p>
   </div>
-  <aside class="notes">4:00. Итог для отраслевых экспертов: конкретные шесть углов, что выигрываем, что теряем, при каких условиях 90 % достижимы, и где границы модели. Все числа — из проверенных Run с hash.</aside>
+  <aside class="notes"><b>4:00</b> Наша рекомендация — конфигурация, которая не платит штатным режимом за стресс: 90 % выполнены с запасом, худший клиент при двух тысячах растёт на семь пунктов, перерыв вдвое короче. Честная цена — два пункта в сценарии отказов.</aside>
 </section>
 
 
@@ -877,7 +868,7 @@
     <div class="panel"><span class="k">Интеграция</span><h3>Свои данные и выгрузка</h3><p>Любой сценарий той же схемы, выгрузка в формате кейса, HTTP-API и командная строка, запуск одной командой.</p></div>
     <div class="panel"><span class="k">Экономика</span><h3>Цена процентного пункта</h3><p>Смета, стоимость владения и сравнение носителей рядом с доступностью — один экран для инженера и для бюджета.</p></div>
   </div>
-  <aside class="notes">4:50. Итог в шести тезисах. Дальше — ссылка на стенд.</aside>
+  <aside class="notes"><b>4:10</b> Итог: решения о группировке — на расчётах, а не на ощущениях.</aside>
 </section>
 
 <!-- 22. FINAL -->
@@ -895,7 +886,7 @@
     </div>
     <div class="rise" style="display:flex; justify-content:center"><div class="qr" id="qr" aria-label="QR-код со ссылкой на стенд"></div></div>
   </div>
-  <aside class="notes">5:00. Закончить конкретикой: выбранная конфигурация, оставшиеся риски, план проверки физической реализуемости.</aside>
+  <aside class="notes"><b>4:15</b> Стенд открыт — проверьте любое число сами. Спасибо.</aside>
 </section>
 
 </div></div>
