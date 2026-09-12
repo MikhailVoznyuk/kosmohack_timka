@@ -1,0 +1,1089 @@
+<title>Constellation Resilience Lab</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  :root {
+    --bg: #060a13;
+    --bg-2: #0b1322;
+    --panel: rgba(15, 25, 43, 0.72);
+    --panel-solid: #0f192b;
+    --line: #1f2d47;
+    --line-soft: #172238;
+    --ink: #eaf0fa;
+    --ink-2: #a9b7cc;
+    --ink-3: #6f7e98;
+    --accent: #7cc4ff;
+    --accent-deep: #2f7fd1;
+    --good: #5ddcb0;
+    --warn: #f4b64a;
+    --bad: #ff6e62;
+    --p1: #7cc4ff;
+    --p2: #5ddcb0;
+    --p3: #ffb3a0;
+    --display: "Unbounded", "Golos Text", system-ui, sans-serif;
+    --body: "Golos Text", "Manrope", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 20px;
+    line-height: 1.45;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: rgba(124, 196, 255, 0.35); }
+
+  /* ---------- background ---------- */
+  #bg {
+    position: fixed; inset: 0; width: 100%; height: 100%;
+    transition: opacity 900ms ease;
+    opacity: 1;
+  }
+  #bg.dim { opacity: 0.22; }
+  #bg.off { opacity: 0.08; }
+  #vignette {
+    position: fixed; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(120% 90% at 50% 10%, rgba(11, 19, 34, 0) 0%, rgba(6, 10, 19, 0.55) 70%, rgba(6, 10, 19, 0.92) 100%);
+  }
+
+  /* ---------- stage ---------- */
+  #viewport { position: fixed; inset: 0; overflow: hidden; }
+  #stage {
+    position: absolute; left: 50%; top: 50%; width: 1600px; height: 900px;
+    margin: -450px 0 0 -800px;
+    transform-origin: center center;
+  }
+  .slide {
+    position: absolute; inset: 0; padding: 72px 96px 88px;
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transform: translateY(26px) scale(0.985);
+    transition: opacity 620ms cubic-bezier(.22,.61,.36,1), transform 620ms cubic-bezier(.22,.61,.36,1), visibility 0s linear 620ms;
+    display: flex; flex-direction: column;
+  }
+  .slide.active {
+    opacity: 1; visibility: visible; pointer-events: auto;
+    transform: none;
+    transition: opacity 620ms cubic-bezier(.22,.61,.36,1), transform 620ms cubic-bezier(.22,.61,.36,1), visibility 0s;
+  }
+  .slide.leaving { transform: translateY(-18px) scale(0.99); }
+
+  /* enter choreography */
+  .slide .rise { opacity: 0; transform: translateY(18px); transition: opacity 600ms ease, transform 600ms cubic-bezier(.22,.61,.36,1); }
+  .slide.active .rise { opacity: 1; transform: none; }
+  .slide.active .rise:nth-child(1) { transition-delay: 80ms; }
+  .slide.active .rise:nth-child(2) { transition-delay: 180ms; }
+  .slide.active .rise:nth-child(3) { transition-delay: 280ms; }
+  .slide.active .rise:nth-child(4) { transition-delay: 380ms; }
+  .slide.active .rise:nth-child(5) { transition-delay: 480ms; }
+  .slide.active .rise:nth-child(6) { transition-delay: 580ms; }
+  @media (prefers-reduced-motion: reduce) {
+    .slide, .slide .rise, .bar i, #bg { transition: none !important; }
+  }
+
+  /* ---------- chrome ---------- */
+  .eyebrow {
+    font-family: var(--mono); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-3); display: flex; align-items: center; gap: 14px; margin-bottom: 22px;
+  }
+  .eyebrow .crit {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 5px 10px; border: 1px solid var(--line); border-radius: 4px; color: var(--ink-2);
+    background: rgba(15, 25, 43, 0.6);
+  }
+  .eyebrow .crit b { color: var(--accent); font-weight: 600; }
+  .eyebrow .pts { color: var(--ink-3); }
+  h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+  h2 { font-size: 44px; line-height: 1.12; font-weight: 700; margin-bottom: 18px; max-width: 1200px; }
+  h3 { font-size: 20px; font-weight: 500; line-height: 1.3; }
+  .lead { font-size: 24px; color: var(--ink-2); max-width: 62ch; margin: 0 0 26px; }
+  p { margin: 0; }
+  .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  .accent { color: var(--accent); }
+  .good { color: var(--good); }
+  .warn { color: var(--warn); }
+  .bad { color: var(--bad); }
+  .muted { color: var(--ink-3); }
+  small, .small { font-size: 15px; color: var(--ink-3); }
+  kbd { font-family: var(--mono); font-size: 12px; border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; color: var(--ink-2); }
+
+  .grid { display: grid; gap: 22px; }
+  .cols-2 { grid-template-columns: 1fr 1fr; }
+  .cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .split { display: grid; grid-template-columns: 1.05fr 1fr; gap: 44px; align-items: start; flex: 1; min-height: 0; }
+  .split.wide-right { grid-template-columns: 0.8fr 1.2fr; }
+  .fill { flex: 1; min-height: 0; }
+
+  .panel {
+    background: var(--panel); border: 1px solid var(--line-soft); border-radius: 10px; padding: 22px 24px;
+    backdrop-filter: blur(6px);
+  }
+  .panel h3 { margin-bottom: 10px; }
+  .panel .label { font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 8px; }
+
+  ul.clean { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+  ul.clean li { padding-left: 22px; position: relative; color: var(--ink-2); }
+  ul.clean li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 10px; height: 2px; background: var(--accent); }
+  ul.clean li b { color: var(--ink); font-weight: 600; }
+
+  /* stat tiles */
+  .stat { display: flex; flex-direction: column; gap: 4px; }
+  .stat .v { font-family: var(--mono); font-size: 56px; font-weight: 600; line-height: 1; letter-spacing: -0.02em; }
+  .stat .k { font-size: 15px; color: var(--ink-3); }
+
+  /* bars */
+  .bars { display: flex; flex-direction: column; gap: 14px; }
+  .bar { display: grid; grid-template-columns: 64px 1fr 92px; gap: 14px; align-items: center; }
+  .bar .n { font-family: var(--mono); color: var(--ink-2); font-size: 15px; }
+  .bar .t { height: 14px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; position: relative; }
+  .bar .t::after { content: ""; position: absolute; left: 90%; top: -3px; bottom: -3px; width: 1px; background: var(--warn); opacity: .7; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 3px; transition: width 1100ms cubic-bezier(.22,.61,.36,1); }
+  .bar i.good { background: var(--good); }
+  .bar i.bad { background: var(--bad); }
+  .bar i.warn { background: var(--warn); }
+  .slide.active .bar i { width: var(--w); }
+  .bar .val { font-family: var(--mono); font-size: 17px; text-align: right; }
+
+  /* tables */
+  table { border-collapse: collapse; width: 100%; font-size: 17px; }
+  th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+  th { font-family: var(--mono); font-weight: 400; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); }
+  td.num, th.num { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  tr.sep td { border-top: 1px solid var(--line); }
+  .ok::after { content: "✓"; color: var(--good); margin-left: 6px; font-family: var(--mono); }
+
+  /* screenshots */
+  .shot {
+    border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--bg-2);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(124,196,255,0.06), 0 0 120px rgba(124,196,255,0.08);
+    position: relative;
+  }
+  .shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .shot .cap {
+    position: absolute; left: 12px; bottom: 12px; padding: 5px 9px; border-radius: 4px;
+    font-family: var(--mono); font-size: 12px; color: var(--ink-2); background: rgba(6,10,19,0.78); border: 1px solid var(--line-soft);
+  }
+  .shot.tall { height: 100%; }
+  .split .shot > img { height: var(--shot-h, 600px); }
+
+  /* title slide */
+  .title { justify-content: flex-end; padding-bottom: 96px; }
+  .title h1 { font-size: 86px; line-height: 1.02; font-weight: 700; letter-spacing: -0.02em; max-width: 1150px; }
+  .title h1 span { color: var(--accent); }
+  .title .sub { font-size: 26px; color: var(--ink-2); max-width: 60ch; margin-top: 26px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+  .chip { font-family: var(--mono); font-size: 14px; padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink-2); background: rgba(6,10,19,0.6); }
+  .chip b { color: var(--ink); font-weight: 600; }
+  .live { position: absolute; right: 96px; bottom: 96px; width: 340px; font-size: 14px; color: var(--ink-3); line-height: 1.5; text-align: right; }
+  .live .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--good); margin-right: 8px; box-shadow: 0 0 12px var(--good); animation: pulse 1.6s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+
+  /* thesis slide */
+  .thesis { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; flex: 1; }
+  .big { font-family: var(--mono); font-size: 150px; line-height: 0.95; font-weight: 600; letter-spacing: -0.04em; }
+  .big small { display: block; font-family: var(--body); font-size: 20px; color: var(--ink-3); letter-spacing: 0; margin-top: 10px; }
+  .vs { display: flex; flex-direction: column; gap: 34px; }
+  .reasons { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 18px; }
+  .reason { display: grid; grid-template-columns: 70px 1fr; gap: 14px; align-items: baseline; padding: 10px 14px; border-left: 2px solid var(--line); }
+  .reason .n { font-family: var(--mono); font-size: 28px; font-weight: 600; text-align: right; }
+  .reason.hot { border-left-color: var(--bad); }
+
+  /* isl slide */
+  .isl-wrap { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 40px; flex: 1; min-height: 0; }
+  .isl-canvas { position: relative; border-radius: 12px; overflow: hidden; border: 1px solid var(--line-soft); background: radial-gradient(60% 60% at 50% 45%, #0c172b 0%, #060a13 100%); }
+  .isl-canvas canvas { width: 100%; height: 100%; display: block; }
+  .isl-hud { position: absolute; left: 16px; top: 16px; display: flex; gap: 10px; }
+  .toggle { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: rgba(6,10,19,0.7); }
+  .toggle button {
+    font: 600 15px var(--mono); color: var(--ink-2); background: transparent; border: 0; padding: 10px 16px; cursor: pointer;
+  }
+  .toggle button.on { background: var(--accent); color: #06111f; }
+  .toggle button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .isl-stats { position: absolute; right: 16px; top: 16px; display: flex; gap: 12px; }
+  .isl-stats .s { padding: 10px 14px; border-radius: 8px; background: rgba(6,10,19,0.75); border: 1px solid var(--line-soft); font-family: var(--mono); font-size: 13px; color: var(--ink-3); }
+  .isl-stats .s b { display: block; font-size: 24px; font-weight: 600; color: var(--ink); }
+  .isl-stats .s.in b { color: var(--p1); }
+  .isl-stats .s.x b { color: var(--p3); }
+  .formula { font-family: var(--mono); font-size: 22px; color: var(--ink); padding: 18px 20px; border: 1px solid var(--line); border-radius: 8px; background: rgba(6,10,19,0.5); line-height: 1.6; }
+  .formula em { font-style: normal; color: var(--accent); }
+  .formula .res { color: var(--warn); font-weight: 600; }
+
+  /* architecture */
+  .arch { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; flex: 1; align-content: start; }
+  .arch .panel { min-height: 300px; }
+  .arch .panel .who { font-family: var(--mono); font-size: 12px; color: var(--ink-3); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+  .arch .panel h3 { font-size: 24px; margin-bottom: 14px; }
+  .arch ul.clean { gap: 8px; font-size: 17px; }
+  .flow { display: flex; gap: 12px; align-items: center; margin-top: 22px; font-family: var(--mono); font-size: 14px; color: var(--ink-3); }
+  .flow span { padding: 8px 12px; border: 1px solid var(--line); border-radius: 6px; background: rgba(6,10,19,0.6); color: var(--ink-2); }
+  .flow i { font-style: normal; color: var(--accent); }
+
+  /* algorithm diagram */
+  .algo { width: 100%; height: 100%; display: block; }
+
+  /* criteria grid */
+  .crit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 40px; flex: 1; align-content: start; }
+  .crit-row { display: grid; grid-template-columns: 52px 1fr; gap: 14px; padding: 10px 0; border-bottom: 1px solid var(--line-soft); align-items: baseline; }
+  .crit-row .pts { font-family: var(--mono); font-size: 26px; font-weight: 600; color: var(--accent); text-align: right; }
+  .crit-row .name { font-weight: 600; }
+  .crit-row .where { font-size: 15px; color: var(--ink-3); }
+  .crit-head { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+
+  /* final */
+  .final { justify-content: center; }
+  .final h2 { font-size: 56px; }
+  .qr { background: #fff; padding: 12px; border-radius: 10px; width: 196px; height: 196px; }
+  .qr img, .qr canvas { display: block; width: 172px; height: 172px; }
+  .final a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(124,196,255,.4); }
+
+  /* HUD */
+  #hud { position: fixed; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,0.06); z-index: 5; }
+  #hud i { display: block; height: 100%; width: 0; background: var(--accent); transition: width 500ms ease; }
+  #counter { position: fixed; right: 26px; bottom: 16px; font-family: var(--mono); font-size: 13px; color: var(--ink-3); z-index: 5; display: flex; gap: 14px; align-items: center; }
+  #counter button { background: transparent; border: 1px solid var(--line); color: var(--ink-2); border-radius: 6px; width: 34px; height: 30px; cursor: pointer; font: 14px var(--mono); }
+  #counter button:hover { border-color: var(--accent); color: var(--accent); }
+  #counter button:focus-visible { outline: 2px solid var(--accent); }
+  #brand { position: fixed; left: 26px; bottom: 14px; font-family: var(--mono); font-size: 13px; color: var(--ink-3); z-index: 5; letter-spacing: .06em; }
+  #brand b { color: var(--ink-2); font-weight: 500; }
+  #notes {
+    position: fixed; left: 0; right: 0; bottom: 0; max-height: 34vh; overflow: auto; z-index: 6;
+    background: rgba(6,10,19,0.94); border-top: 1px solid var(--line); padding: 18px 28px 26px;
+    font-size: 17px; color: var(--ink-2); line-height: 1.5; display: none;
+  }
+  #notes.on { display: block; }
+  #notes .t { font-family: var(--mono); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .notes { display: none; }
+  #help { position: fixed; top: 14px; right: 26px; font-family: var(--mono); font-size: 12px; color: var(--ink-3); z-index: 5; opacity: .8; }
+</style>
+
+<canvas id="bg"></canvas>
+<div id="vignette"></div>
+<div id="help"><kbd>→</kbd> далее · <kbd>N</kbd> заметки · <kbd>F</kbd> во весь экран</div>
+
+<div id="viewport"><div id="stage">
+
+<!-- 1. Title -->
+<section class="slide title" data-bg="full">
+  <div class="eyebrow rise">КосмоХакатон 2026 · Проектирование устойчивой спутниковой группировки</div>
+  <h1 class="rise">Constellation <span>Resilience</span> Lab</h1>
+  <p class="sub rise">Браузерный сервис, который считает доступность связи для северных пунктов, объясняет каждый перерыв и подбирает проверенную конфигурацию группировки.</p>
+  <div class="chips rise">
+    <span class="chip"><b>48</b> аппаратов · 3 плоскости</span>
+    <span class="chip">h = <b>550 км</b> · i = <b>87°</b></span>
+    <span class="chip"><b>720</b> отсчётов × 120 с</span>
+    <span class="chip">шлюз <b>Мурманск</b> · клиенты C65 · C70 · C72</span>
+  </div>
+  <div class="live rise"><span class="dot"></span>На фоне — живой расчёт по формулам «Описания данных»: орбиты, межспутниковые линии и маршруты до шлюза перестраиваются на каждом кадре.</div>
+  <aside class="notes">0:00. Приветствие: «Мы строили не калькулятор покрытия, а инструмент инженера, который отвечает на вопрос "дойдут ли данные до шлюза". На фоне — наша же модель: те же формулы, что в ядре». Переход к главному числу кейса.</aside>
+</section>
+
+<!-- 2. Thesis -->
+<section class="slide" data-bg="dim">
+  <div class="eyebrow"><span class="crit">Тезис кейса</span></div>
+  <div class="thesis">
+    <div class="vs">
+      <div class="rise">
+        <div class="big good"><span data-count="99.86" data-dec="2">0</span>&thinsp;%<small>видимость: над пунктом C70 почти всегда есть спутник</small></div>
+      </div>
+      <div class="rise">
+        <div class="big bad"><span data-count="62.22" data-dec="2">0</span>&thinsp;%<small>доступность: сквозной маршрут до шлюза при ISL 2000 км</small></div>
+      </div>
+    </div>
+    <div>
+      <h2 class="rise">Спутник над головой — ещё не связь</h2>
+      <p class="lead rise">Пункт видит аппарат, но данные не доходят: сеть между спутниками рвётся. Сервис раскладывает каждый из 272 отсчётов без пути по причине — без двойного счёта.</p>
+      <div class="reasons rise">
+        <div class="reason"><span class="n num">1</span><span>нет видимого аппарата</span></div>
+        <div class="reason"><span class="n num">8</span><span>нет контакта со шлюзом</span></div>
+        <div class="reason hot"><span class="n num bad">263</span><span>разрыв межспутниковой сети</span></div>
+      </div>
+      <div class="shot rise" style="margin-top:18px"><img src="img/crop_timeline04.jpg" alt="Временная шкала сценария 04: красные интервалы — разрыв спутниковой сети" style="height:126px; object-fit: cover; object-position: 0 0"><span class="cap">стенд · сценарий 04 · красное — разрыв межспутниковой сети</span></div>
+      <p class="small rise" style="margin-top:12px">Сценарий 04, клиент C70, сетка 720 × 120 с. Разложение совпадает с контрольным из ТЗ.</p>
+    </div>
+  </div>
+  <aside class="notes">0:10. Главный вывод кейса: видимость 99,86 %, а доступность 62,22 %. Из 272 отсчётов без пути 263 — разрыв сети. Это не ошибка маршрутизации, а геометрия — показываем на следующем слайде.</aside>
+</section>
+
+<!-- 3. Why ring breaks: interactive -->
+<section class="slide" data-bg="off" data-sim="isl">
+  <div class="eyebrow"><span class="crit"><b>Алгоритмы маршрутизации</b> · обоснованность</span></div>
+  <div class="isl-wrap">
+    <div class="isl-canvas rise">
+      <canvas id="islCanvas"></canvas>
+      <div class="isl-hud">
+        <div class="toggle" role="group" aria-label="Дальность ISL">
+          <button type="button" data-range="3000" class="on">ISL 3000 км</button>
+          <button type="button" data-range="2000">ISL 2000 км</button>
+        </div>
+      </div>
+      <div class="isl-stats">
+        <div class="s in">внутри плоскости<b id="stIn">0</b></div>
+        <div class="s x">между плоскостями<b id="stX">0</b></div>
+        <div class="s">маршрутов из 3<b id="stR">0</b></div>
+      </div>
+    </div>
+    <div>
+      <h2 class="rise">Почему при 2000 км кольцо исчезает</h2>
+      <p class="lead rise">Соседи в плоскости стоят через 22,5°. Расстояние между ними — хорда, и фазирование плоскости её не меняет.</p>
+      <div class="formula rise">d<sub>adj</sub> = 2·(R + h)·sin(π/16)<br>= 2 · 6921 · 0,195 = <span class="res">2700,44 км</span> &gt; 2000</div>
+      <ul class="clean rise" style="margin-top:22px">
+        <li>При ISL 2000 км <b>все внутриплоскостные линии недоступны</b> при любом RAAN и фазе — сеть держится только на межплоскостных контактах.</li>
+        <li>Условие кольца 2(R+h)·sin(π/N) &lt; L требует <b>не менее 22 аппаратов</b> в плоскости. Состав менять нельзя, поэтому 90 % при 2000 км — вопрос не подбора, а геометрии.</li>
+        <li>Переключите дальность: считается та же модель, что в ядре.</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">0:30. Нажать «ISL 2000 км»: кольца внутри плоскостей гаснут, остаются только перекрёстные линии, число маршрутов падает. Хорда 2700,44 км — это ответ, почему никакое фазирование не спасает. Дальше — что мы построили, чтобы такие вещи были видны инженеру.</aside>
+</section>
+
+<!-- 4. Architecture -->
+<section class="slide" data-bg="dim">
+  <div class="eyebrow"><span class="crit"><b>Качество кода</b> · документация и запуск</span><span class="pts">5 + 5 баллов</span></div>
+  <h2 class="rise">Один расчётный эталон — и всё остальное вокруг него</h2>
+  <p class="lead rise">Геометрия считается только на сервере. У интерфейса нет второй реализации модели: каждое число на экране — результат ядра, с hash сценария и версией.</p>
+  <div class="arch rise">
+    <div class="panel">
+      <div class="who">packages/engine · Python 3.12, NumPy</div>
+      <h3>Расчётное ядро</h3>
+      <ul class="clean">
+        <li>Контракт <b>cosmo-A-1.0</b>: строгие типы, диапазоны, ссылки, дубликаты</li>
+        <li>Геометрия, контакты, сетка времени, маски отказов</li>
+        <li>Multi-source BFS от шлюзов, три политики маршрута</li>
+        <li>Метрики, причины разрывов, N−1, резервные пути, сравнение</li>
+        <li><b>Независимый валидатор</b> результата — отдельно от поиска пути</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <div class="who">apps/api · FastAPI, PostgreSQL, worker</div>
+      <h3>Сервер и очередь</h3>
+      <ul class="clean">
+        <li>Неизменяемые ревизии: правка = новая версия, baseline не трогается</li>
+        <li>Задания в БД с арендой, отменой и атомарной публикацией</li>
+        <li>Idempotency-Key, коды ошибок с path · code · message</li>
+        <li>Allowlist изменений проверяет сервер, а не форма</li>
+        <li>Экспорт cosmo-A-result-1.0, CSV, паспорт эксперимента</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <div class="who">apps/web · React 19, TypeScript, Cesium</div>
+      <h3>Рабочее место инженера</h3>
+      <ul class="clean">
+        <li>Проекты → Конструктор → Сравнение → Устойчивость → Оптимизация</li>
+        <li>3D-сфера, 2D-карта и табличный режим без WebGL</li>
+        <li>Таймлайн по step_index, воспроизведение 1× 5× 20×</li>
+        <li>Клавиатура, aria, состояние не только цветом</li>
+        <li>Прогресс по SSE поверх опроса</li>
+      </ul>
+    </div>
+  </div>
+  <div class="flow rise">
+    <span>docker compose up -d --build</span><i>→</i><span>db · init · backend · worker · app</span><i>→</i><span>234 теста · pytest</span><i>→</i><span>ADR × 9 · реестр требований · сверка с критериями</span>
+  </div>
+  <aside class="notes">0:55. Три слоя, одна модель. Подчеркнуть: валидатор результата написан отдельно от алгоритма поиска, чтобы ошибка одного не маскировала другую. Стенд поднимается одной командой, сценарии кейса загружаются автоматически.</aside>
+</section>
+
+<!-- 5. Correctness -->
+<section class="slide" data-bg="dim">
+  <div class="eyebrow"><span class="crit"><b>Корректность расчётов</b></span><span class="pts">15 баллов</span></div>
+  <div class="split">
+    <div>
+      <h2 class="rise">Все 12 контрольных значений ТЗ воспроизведены точно</h2>
+      <p class="lead rise">Не проценты после округления, а целые отсчёты: golden-тесты держат 696 / 720, 711 / 720, 712 / 720 и так далее.</p>
+      <div class="grid cols-2 rise">
+        <div class="panel"><div class="label">Сверка с geometry.py организаторов</div><div class="stat"><span class="v accent">9,1·10<sup style="font-size:.5em">−13</sup></span><span class="k">км расхождения при допуске 10⁻⁶ · углы 5,3·10⁻¹³° · наборы рёбер идентичны</span></div></div>
+        <div class="panel"><div class="label">Полный расчёт 48 × 720</div><div class="stat"><span class="v accent">0,3 с</span><span class="k">при цели ТЗ до 5 с · валидация 0,3 мс · N−1 по 48 аппаратам 14 с</span></div></div>
+      </div>
+      <ul class="clean rise" style="margin-top:22px">
+        <li>Границы честные: ISL ровно L — <b>нет связи</b>, угол ровно на пороге — <b>контакт есть</b>, отказ [21 600; 43 200) — с 6-го часа до 12-го.</li>
+        <li>Инварианты: переименование ID не меняет контакты, удаление аппарата не добавляет связей, рост дальности их не убирает.</li>
+      </ul>
+    </div>
+    <div class="rise">
+      <table>
+        <thead><tr><th>Сценарий</th><th>Пункт</th><th class="num">Видимость</th><th class="num">Доступность</th><th class="num">Макс. перерыв</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="3">01 Полная</td><td>C65</td><td class="num">97,78 %</td><td class="num ok">96,67 %</td><td class="num">8 мин</td></tr>
+          <tr><td>C70</td><td class="num">99,86 %</td><td class="num ok">98,75 %</td><td class="num">2 мин</td></tr>
+          <tr><td>C72</td><td class="num">100,00 %</td><td class="num ok">98,89 %</td><td class="num">2 мин</td></tr>
+          <tr class="sep"><td rowspan="3">02 Первая очередь</td><td>C65</td><td class="num">38,19 %</td><td class="num ok">27,22 %</td><td class="num">572 мин</td></tr>
+          <tr><td>C70</td><td class="num">48,75 %</td><td class="num ok">15,83 %</td><td class="num">658 мин</td></tr>
+          <tr><td>C72</td><td class="num">58,47 %</td><td class="num ok">12,64 %</td><td class="num">796 мин</td></tr>
+          <tr class="sep"><td rowspan="3">03 Отказы</td><td>C65</td><td class="num">84,58 %</td><td class="num ok">79,31 %</td><td class="num">24 мин</td></tr>
+          <tr><td>C70</td><td class="num">90,28 %</td><td class="num ok">80,83 %</td><td class="num">24 мин</td></tr>
+          <tr><td>C72</td><td class="num">93,06 %</td><td class="num ok">82,50 %</td><td class="num">20 мин</td></tr>
+          <tr class="sep"><td rowspan="3">04 ISL 2000</td><td>C65</td><td class="num">97,78 %</td><td class="num ok">77,50 %</td><td class="num">94 мин</td></tr>
+          <tr><td>C70</td><td class="num">99,86 %</td><td class="num ok">62,22 %</td><td class="num">178 мин</td></tr>
+          <tr><td>C72</td><td class="num">100,00 %</td><td class="num ok">65,14 %</td><td class="num">4 мин</td></tr>
+        </tbody>
+      </table>
+      <p class="small" style="margin-top:10px">✓ — совпадает с контрольной таблицей раздела 2.2 ТЗ. Политика «кратчайший по переходам», ядро 0.1.0.</p>
+    </div>
+  </div>
+  <aside class="notes">1:15. Числа жюри может проверить на стенде за 20 секунд: открыть «01 Полная группировка», нажать «Рассчитать» — 96,67 / 98,75 / 98,89. Сверка с эталонным модулем — 10⁻¹³ км.</aside>
+</section>
+
+<!-- 6. Workplace -->
+<section class="slide" data-bg="off">
+  <div class="eyebrow"><span class="crit"><b>Удобство использования</b> · проектирование и сравнение</span><span class="pts">10 + 15 баллов</span></div>
+  <div class="split wide-right">
+    <div>
+      <h2 class="rise">Конструктор: весь сценарий жюри — без правки JSON</h2>
+      <ul class="clean rise">
+        <li><b>Очередь запуска</b> P1 / P2 / P3 — незапущенные аппараты остаются на сцене, но не участвуют в связях.</li>
+        <li><b>RAAN и фаза</b> каждой плоскости числом и ползунком с шагом 0,1°.</li>
+        <li><b>Отказы</b> — выбрать аппарат в списке или прямо на маршруте, задать [start; end), увидеть затронутые отсчёты.</li>
+        <li>Расчёт — явно кнопкой. Правка помечает результат устаревшим, но прежний Run остаётся для сравнения.</li>
+        <li>Три вида одного снимка: <b>3D-сфера</b>, <b>2D-карта</b>, <b>таблица</b>; расписание пролётов с уточнёнными временами восхода и захода.</li>
+        <li>Пробел — воспроизведение, ← → — шаг, Shift — 10 отсчётов.</li>
+      </ul>
+    </div>
+    <div class="rise">
+      <div class="shot"><img src="img/10_design_top.jpg" alt="Конструктор: сводка расчёта, очередь запуска, ориентация плоскостей"><span class="cap">стенд · 01 Полная группировка · после расчёта</span></div>
+    </div>
+  </div>
+  <aside class="notes">1:35. Живая демонстрация на стенде: выбрать C65, перемотать шкалу, показать смену маршрута и перерыв 8 минут. Здесь же показать отказ аппарата из маршрута.</aside>
+</section>
+
+<!-- 7. Scene -->
+<section class="slide" data-bg="off">
+  <div class="eyebrow"><span class="crit"><b>Удобство использования</b> · наглядность покрытия и маршрутов</span></div>
+  <div class="split" style="grid-template-columns: 1.3fr 0.7fr; --shot-h: 560px">
+    <div class="rise">
+      <div class="shot"><img src="img/11_scene_3d.jpg" alt="3D-сцена Cesium с аппаратами, контактами и маршрутом"><span class="cap">модельная сфера R = 6371 км · координаты ядра, не WGS84</span></div>
+    </div>
+    <div>
+      <h2 class="rise" style="font-size:36px">Сцена показывает ровно то, что посчитано</h2>
+      <ul class="clean rise">
+        <li>Активный, отказавший и незапущенный аппарат различаются <b>формой и цветом</b>.</li>
+        <li>По умолчанию — маршрут и контакты выбранного клиента; полный граф включается отдельно.</li>
+        <li>Контакты — только на расчётном отсчёте. Между отсчётами линия никогда не выдаётся за доказанную.</li>
+        <li>Клик по узлу: плоскость, очередь, состояние, координаты, угол возвышения над клиентом, участие в маршруте.</li>
+        <li>Без WebGL — SVG-сцена и таблица: инженер не остаётся без модели.</li>
+      </ul>
+      <div class="shot rise" style="margin-top:22px"><img src="img/17_map_2d.jpg" alt="2D-карта: подспутниковые точки, трассы плоскостей, маршрут" style="height:150px; object-position: 0 -33%"><span class="cap">2D-карта · те же данные, равнопромежуточная проекция</span></div>
+    </div>
+  </div>
+  <aside class="notes">1:50. Одна фраза про честность визуализации: сфера модельная, координаты ядра умножены на 1000 — никакого WGS84 и подмены геометрии.</aside>
+</section>
+
+<!-- 8. Routing -->
+<section class="slide" data-bg="dim">
+  <div class="eyebrow"><span class="crit"><b>Алгоритмы маршрутизации</b></span><span class="pts">15 баллов</span></div>
+  <div class="split">
+    <div>
+      <h2 class="rise">Маршрут ищется от шлюза, проверяется отдельно</h2>
+      <ul class="clean rise">
+        <li><b>Multi-source BFS.</b> Спутники с контактом к доступному шлюзу получают расстояние 1; волна идёт только по ISL; клиент выбирает видимый аппарат с минимальным расстоянием. Один обход на отсчёт — для всех клиентов.</li>
+        <li><b>Наземный транзит запрещён.</b> Общий обход графа давал 73,19 % и 79,72 % — завышение. Путь строго [client, sat…, gateway].</li>
+        <li><b>Три политики</b> — кратчайший по переходам, стабильный, кратчайший по километрам. Доступность у всех одинаковая: это свойство графа, а не алгоритма. Различаются hops, длина и переключения.</li>
+        <li><b>Независимый валидатор</b> проверяет все 2160 записей: концы, уникальность узлов, активность и существование каждого ребра на том же отсчёте.</li>
+        <li>Детерминизм: при равных расстояниях — сортировка по ID. NetworkX — только как тестовый оракул.</li>
+      </ul>
+    </div>
+    <div class="rise">
+      <svg class="algo" viewBox="0 0 640 520" role="img" aria-label="Схема multi-source BFS от шлюза к клиенту">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#7cc4ff"/></marker>
+          <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <!-- earth arc -->
+        <path d="M-40 560 Q320 300 680 560" fill="none" stroke="#1f2d47" stroke-width="2"/>
+        <path d="M-40 560 Q320 300 680 560 L680 600 L-40 600z" fill="#0b1322"/>
+        <!-- ground nodes -->
+        <g font-family="JetBrains Mono, monospace" font-size="14">
+          <rect x="60" y="440" width="18" height="18" transform="rotate(45 69 449)" fill="#f4b64a"/>
+          <text x="52" y="490" fill="#f4b64a">G_MUR · шлюз</text>
+          <circle cx="560" cy="460" r="9" fill="#7cc4ff"/>
+          <text x="520" y="500" fill="#7cc4ff">C70 · клиент</text>
+        </g>
+        <!-- satellites -->
+        <g fill="#eaf0fa">
+          <circle cx="120" cy="250" r="7"/><circle cx="230" cy="160" r="7"/><circle cx="350" cy="120" r="7"/>
+          <circle cx="470" cy="170" r="7"/><circle cx="300" cy="300" r="7"/><circle cx="430" cy="290" r="7"/>
+          <circle cx="560" cy="260" r="7"/><circle cx="180" cy="360" r="7" fill="#3a475e"/>
+        </g>
+        <!-- isl edges -->
+        <g stroke="#2b3d5c" stroke-width="2">
+          <line x1="120" y1="250" x2="230" y2="160"/><line x1="230" y1="160" x2="350" y2="120"/><line x1="350" y1="120" x2="470" y2="170"/>
+          <line x1="470" y1="170" x2="560" y2="260"/><line x1="230" y1="160" x2="300" y2="300"/><line x1="300" y1="300" x2="430" y2="290"/>
+          <line x1="430" y1="290" x2="560" y2="260"/><line x1="350" y1="120" x2="430" y2="290"/>
+        </g>
+        <!-- ground links -->
+        <g stroke="#f4b64a" stroke-width="2" stroke-dasharray="4 4">
+          <line x1="69" y1="449" x2="120" y2="250"/><line x1="69" y1="449" x2="300" y2="300"/>
+        </g>
+        <!-- route -->
+        <g stroke="#7cc4ff" stroke-width="4" stroke-linecap="round" filter="url(#glow)">
+          <line x1="69" y1="449" x2="300" y2="300"/><line x1="300" y1="300" x2="430" y2="290"/><line x1="430" y1="290" x2="560" y2="260"/><line x1="560" y1="260" x2="560" y2="460"/>
+        </g>
+        <!-- distances -->
+        <g font-family="JetBrains Mono, monospace" font-size="15" fill="#a9b7cc">
+          <text x="100" y="236">d=1</text><text x="308" y="330">d=1</text><text x="212" y="146">d=2</text><text x="438" y="320">d=2</text>
+          <text x="340" y="106">d=3</text><text x="568" y="250">d=3</text><text x="478" y="156">d=4</text>
+          <text x="140" y="392" fill="#3a475e">отказ</text>
+        </g>
+        <g font-family="Golos Text, sans-serif" font-size="15" fill="#6f7e98">
+          <text x="330" y="40">волна расстояний идёт от шлюза только по ISL</text>
+          <text x="330" y="62">клиент берёт видимый аппарат с min d → путь длиной d + 1</text>
+        </g>
+        <path d="M330 30 L200 145" fill="none" stroke="#3a475e" stroke-width="1"/>
+      </svg>
+    </div>
+  </div>
+  <aside class="notes">2:05. Ключевая фраза для техэкспертов: доступность — свойство графа, политика меняет только путь. Отсутствие пути у стратегии при доказанной достижимости считаем ошибкой расчёта и не публикуем как Run.</aside>
+</section>
+
+<!-- 9. Gaps explained -->
+<section class="slide" data-bg="off">
+  <div class="eyebrow"><span class="crit"><b>Анализ устойчивости</b> · обработка разрывов и отказов</span><span class="pts">10 баллов</span></div>
+  <div class="split" style="--shot-h: 430px">
+    <div>
+      <h2 class="rise">Каждый перерыв объяснён и проверен контрфактически</h2>
+      <ul class="clean rise">
+        <li>Четыре причины с приоритетом: <b>нет видимого аппарата</b> → <b>все шлюзы недоступны</b> → <b>нет контакта со шлюзом</b> → <b>разрыв сети</b>. Флаги хранятся все, основная — одна: время раскладывается без двойного счёта.</li>
+        <li>Для разрыва сети видны компоненты: какие аппараты видит клиент, у каких есть выход на шлюз, и почему они не соединены.</li>
+        <li>При отказе ядро <b>возвращает аппарат</b> при неизменных остальных условиях. Только если путь восстановился — пишем «восстановление устраняет разрыв». Иначе честно: одного аппарата недостаточно.</li>
+        <li><b>Резерв</b> — до двух путей без общих спутников через max-flow с расщеплением узлов; при одном шлюзе — предупреждение о единой точке отказа.</li>
+      </ul>
+    </div>
+    <div class="rise">
+      <div class="shot"><img src="img/62_scene_isl_gap.jpg" alt="Сцена: C70 видит один аппарат, но пути до шлюза нет — разрыв межспутниковой сети"><span class="cap">сценарий 04 · C70 · k = 20 · контакт есть, пути нет: ISL_DISCONNECTED</span></div>
+      <div class="grid cols-2" style="margin-top:14px; gap:14px">
+        <div class="shot"><img src="img/crop_gap_panel.jpg" alt="Панель разрыва: основная причина" style="height:150px; object-fit: cover; object-position: 0 0"><span class="cap">карточка отсчёта · основная причина</span></div>
+        <div class="panel" style="padding:14px 16px"><div class="label">Маршрут на соседнем отсчёте k = 19</div><div class="num" style="font-size:14px; color:var(--ink-2); line-height:1.6">C70 → S30 · 1 695 км · 11,9°<br>S30 → S14 · ISL 1 703 км<br>S14 → G_MUR · 1 731 км · 11,3°<br><span class="muted">3 перехода · 5 130 км · ≥ 17,1 мс</span></div></div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">2:20. На стенде: задать отказ аппарату из маршрута, пересчитать, открыть «Разрыв». Показать, что ядро само проверило — вернёт ли этот аппарат связь.</aside>
+</section>
+
+<!-- 10. Comparison -->
+<section class="slide" data-bg="off">
+  <div class="eyebrow"><span class="crit"><b>Проектирование и сравнение конфигураций</b></span><span class="pts">15 баллов</span></div>
+  <div class="split">
+    <div>
+      <h2 class="rise">Сравнение: первая очередь против полной группировки</h2>
+      <p class="lead rise">Показываем не средний процент, а каждого клиента и его перерывы. Рост минимума никогда не выдаётся за улучшение всех пунктов.</p>
+      <div class="panel rise">
+        <div class="label">Доступность по клиентам · ориентир 90 % отмечен линией</div>
+        <div class="bars">
+          <div class="bar"><span class="n">C65 · P3</span><span class="t"><i class="good" style="--w:96.67%"></i></span><span class="val">96,67 %</span></div>
+          <div class="bar"><span class="n">C65 · P1</span><span class="t"><i class="bad" style="--w:27.22%"></i></span><span class="val">27,22 %</span></div>
+          <div class="bar"><span class="n">C70 · P3</span><span class="t"><i class="good" style="--w:98.75%"></i></span><span class="val">98,75 %</span></div>
+          <div class="bar"><span class="n">C70 · P1</span><span class="t"><i class="bad" style="--w:15.83%"></i></span><span class="val">15,83 %</span></div>
+          <div class="bar"><span class="n">C72 · P3</span><span class="t"><i class="good" style="--w:98.89%"></i></span><span class="val">98,89 %</span></div>
+          <div class="bar"><span class="n">C72 · P1</span><span class="t"><i class="bad" style="--w:12.64%"></i></span><span class="val">12,64 %</span></div>
+        </div>
+        <p class="small" style="margin-top:14px">Максимальный перерыв: 8 / 2 / 2 мин → <span class="bad num">572 / 658 / 796 мин</span>. Одна плоскость из трёх не держит связь на севере.</p>
+      </div>
+      <ul class="clean rise" style="margin-top:18px">
+        <li>Сервер проверяет сопоставимость: разные сетки, пункты или условия связи — сравнение помечается «изменены условия» или отклоняется.</li>
+        <li>Рекомендация детерминирована: минимум по клиентам → среднее → перерыв. Порядок виден пользователю.</li>
+      </ul>
+    </div>
+    <div class="rise">
+      <div class="shot"><img src="img/30_comparison.jpg" alt="Экран сравнения двух расчётов"><span class="cap">экран «Сравнение» · параметры, показатели, разница в п.п.</span></div>
+    </div>
+  </div>
+  <aside class="notes">2:35. Переключить очередь на P1, пересчитать, открыть «Сравнение»: видно изменённый параметр launch_stage и падение 96,67 → 27,22. Отдельно — перерывы в минутах.</aside>
+</section>
+
+<!-- 11. N-1 -->
+<section class="slide" data-bg="off">
+  <div class="eyebrow"><span class="crit"><b>Анализ устойчивости</b> · уязвимые аппараты</span><span class="pts">10 баллов</span></div>
+  <div class="split">
+    <div>
+      <h2 class="rise">N−1: 48 контрфактических суток за 14 секунд</h2>
+      <p class="lead rise">Каждый запущенный аппарат по очереди исключается на весь горизонт. Ранжируем по худшему клиенту, а не по минимуму сети — иначе ущерб «не худшему» пункту прячется.</p>
+      <div class="grid cols-4 rise">
+        <div class="panel"><div class="label">S19</div><div class="stat"><span class="v bad" style="font-size:40px">−2,36</span><span class="k">п.п. у C65 · все три направления</span></div></div>
+        <div class="panel"><div class="label">S33</div><div class="stat"><span class="v bad" style="font-size:40px">−2,36</span><span class="k">п.п. у C65 · все три направления</span></div></div>
+        <div class="panel"><div class="label">S44</div><div class="stat"><span class="v bad" style="font-size:40px">−2,36</span><span class="k">п.п. у C65 · все три направления</span></div></div>
+        <div class="panel"><div class="label">S45</div><div class="stat"><span class="v bad" style="font-size:40px">−2,36</span><span class="k">п.п. у C65 · все три направления</span></div></div>
+      </div>
+      <ul class="clean rise" style="margin-top:20px">
+        <li>Ни один одиночный отказ не выводит полную группировку за 90 %: худший клиент остаётся на 94,31 %.</li>
+        <li>Но <b>C65 — самый уязвимый пункт</b>: в 67,4 % отсчётов у него единственный вход в сеть; два независимых входа — лишь 29,3 % времени (C70 — 60,0 %, C72 — 71,8 %).</li>
+        <li>Стресс-набор: отказ шлюза, соседи в плоскости, целая плоскость, случайные отказы с seed. Это стресс-тесты, не вероятность отказа.</li>
+      </ul>
+    </div>
+    <div class="rise">
+      <div class="shot"><img src="img/40_nminus1.jpg" alt="Экран «Устойчивость»: критические аппараты и резервирование входа"><span class="cap">«Устойчивость» → «Отказ одного аппарата» · сценарий 01</span></div>
+    </div>
+  </div>
+  <aside class="notes">2:50. Карточка критического аппарата воспроизводима: задайте такой же отказ вручную — получите те же −2,36 п.п. Предложение по устойчивости — на слайде рекомендации.</aside>
+</section>
+
+<!-- 11b. Five analyses -->
+<section class="slide" data-bg="off">
+  <div class="eyebrow"><span class="crit"><b>Анализ устойчивости</b> · пять инструментов на одном экране</span></div>
+  <div class="split" style="grid-template-columns: 0.72fr 1.28fr">
+    <div>
+      <h2 class="rise">Что сломается, почему и где резерв</h2>
+      <ul class="clean rise">
+        <li><b>Кривая развёртывания.</b> Очередь 1 — 12,64 %, очередь 2 — 61,81 %, очередь 3 — 96,67 %. Ориентир достигается только с третьей очереди; между 1 и 2 — +49,17 п.п.</li>
+        <li><b>Стресс-набор.</b> Худший случай — отключение плоскости: 60,97 %, перерыв 5 ч 30 мин. Шлюз недоступен 6 часов — 71,67 %. Соседи в плоскости — 87,78 %. Случайные отказы с seed — 94,58 %.</li>
+        <li><b>Стратегии маршрутизации.</b> Доступность совпала у всех трёх; путь по расстоянию короче на 161 км и даёт на 72 переключения меньше.</li>
+        <li><b>Развёртка по оси.</b> Фаза P1 повторяется каждые 22,5°: размах всего 1,11 п.п. — одной плоскостью номинал не улучшить, нужен совместный поиск шести углов.</li>
+      </ul>
+    </div>
+    <div class="grid cols-2 rise" style="gap:14px">
+      <div class="shot"><img src="img/42_deployment_curve.jpg" alt="Кривая развёртывания по очередям" style="height:236px; object-position: 0 -62%"><span class="cap">кривая развёртывания</span></div>
+      <div class="shot"><img src="img/44_stress.jpg" alt="Стресс-набор" style="height:236px; object-position: 0 -62%"><span class="cap">стресс-набор · seed 20260911</span></div>
+      <div class="shot"><img src="img/43_policies.jpg" alt="Стратегии маршрутизации" style="height:236px; object-position: 0 -66%"><span class="cap">стратегии маршрутизации</span></div>
+      <div class="shot"><img src="img/45_sweep.jpg" alt="Развёртка по фазе P1" style="height:236px; object-position: 0 -70%"><span class="cap">развёртка: P1, фазирование, 24 точки</span></div>
+    </div>
+  </div>
+  <aside class="notes">3:00. Все пять анализов — это фоновые задания с той же очередью и тем же ядром. Показать один из них на стенде, остальные — по вопросу.</aside>
+</section>
+
+<!-- 12. Optimization -->
+<section class="slide" data-bg="dim">
+  <div class="eyebrow"><span class="crit"><b>Обоснованность рекомендаций</b> · автоподбор конфигурации</span><span class="pts">10 баллов</span></div>
+  <div class="split">
+    <div>
+      <h2 class="rise">Подбор RAAN и фаз на точном оценщике</h2>
+      <ul class="clean rise">
+        <li>Sobol-старт + <b>дифференциальная эволюция</b> rand/1/bin, популяция 16, seed 20260911, бюджет 300 полных расчётов. Incumbent сохраняется: больший бюджет не ухудшает результат.</li>
+        <li>Меняются только 6 углов. Состав, пункты, высота, дальность и порог — фиксированы allowlist'ом на сервере.</li>
+        <li>Финалист перепроверяется на шаге 60 и 30 с и на независимом валидаторе. Термин «глобальный оптимум» запрещён.</li>
+        <li>Pareto-режим NSGA-II: компромисс «доступность ↔ перерыв».</li>
+      </ul>
+      <div class="grid cols-2 rise" style="margin-top:22px">
+        <div class="panel">
+          <div class="label">Номинал · сценарий 01</div>
+          <div class="stat"><span class="v"><span class="muted" style="font-size:30px">96,67 →</span> <span class="good" data-count="99.17" data-dec="2">0</span>&thinsp;%</span><span class="k">худший клиент · перерыв 8 → 2 мин · target_met_verified · протокол full_search_nominal.json</span></div>
+        </div>
+        <div class="panel">
+          <div class="label">Стресс ISL 2000 при «номинал ≥ 90 %»</div>
+          <div class="stat"><span class="v"><span class="muted" style="font-size:30px">62,22 →</span> <span class="accent" data-count="69.17" data-dec="2">0</span>&thinsp;%</span><span class="k">худший клиент · перерыв 178 → 80 мин · 33 допустимых из 300</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="rise">
+      <div class="shot"><img src="img/51_optimization_result.jpg" alt="Экран «Оптимизация»: протокол поиска и кандидаты"><span class="cap">«Оптимизация» · 300 точных расчётов · каждый кандидат «проверен расчётом» · применить = новая версия</span></div>
+    </div>
+  </div>
+  <aside class="notes">3:10. Внимание: на стенде поиск из интерфейса с seed 20260911 и бюджетом 300 вернул базовый вариант (96,67 %) как лучший — числа 98,33 / 99,17 % получены CLI-протоколами из docs/reports. На защите показывать сохранённый протокол или заранее прогнанный Study, не запускать поиск вживую без проверки. Показать сохранённый Study: бюджет, seed, кандидаты, кнопка «применить» создаёт новую ревизию — baseline не перезаписывается. Минимакс без ограничений ломает номинал (C65 до 85 %), поэтому ограничение «номинал ≥ 90 %» — осознанный выбор.</aside>
+</section>
+
+<!-- 13. ML -->
+<section class="slide" data-bg="dim">
+  <div class="eyebrow"><span class="crit"><b>Обоснованность рекомендаций</b> · ML-ускоритель</span></div>
+  <div class="split">
+    <div>
+      <h2 class="rise">ML — честный benchmark, а не обещание</h2>
+      <p class="lead rise">Surrogate предсказывает худшую доступность по sin/cos шести углов и предлагает кандидатов по expected improvement. Каждый кандидат подтверждается точным расчётом.</p>
+      <table class="rise">
+        <thead><tr><th>Метод · бюджет 48</th><th class="num">seed 20260911</th><th class="num">seed 7</th><th class="num">seed 42</th><th class="num">Среднее</th><th>Вердикт</th></tr></thead>
+        <tbody>
+          <tr><td>Точный поиск (DE)</td><td class="num">65,00</td><td class="num">67,92</td><td class="num">67,64</td><td class="num">66,85</td><td class="muted">baseline</td></tr>
+          <tr><td>Гауссовский процесс</td><td class="num">69,86</td><td class="num">70,00</td><td class="num">68,61</td><td class="num good">69,49</td><td class="good">3 из 3 · +2,64 п.п. · проходит порог</td></tr>
+          <tr><td>CatBoost</td><td class="num">65,69</td><td class="num">67,92</td><td class="num">65,42</td><td class="num">66,34</td><td class="warn">1 из 3 · −0,51 п.п. · не проходит</td></tr>
+        </tbody>
+      </table>
+      <p class="small rise" style="margin-top:10px">Порог из ТЗ: средний выигрыш &gt; 0 и ни одного проигрыша хуже одного отсчёта. Ошибка модели считается только на точках, предложенных до их расчёта. Время прогона 46,7 с против 48,8 с.</p>
+    </div>
+    <div>
+      <div class="panel rise">
+        <div class="label">Что это значит для продукта</div>
+        <ul class="clean">
+          <li>ML — <b>отключаемый режим</b> для коротких бюджетов. При 300 расчётах точный поиск догоняет и обгоняет GP на стрессе.</li>
+          <li>Прогноз хранится в поле <b>predicted</b>, метрики — в <b>verified</b>. Кандидат без exact Run не может стать рекомендацией.</li>
+          <li>Нет «сэкономлено N симуляций» без baseline и метода расчёта.</li>
+          <li>Модель обучается внутри одного Study: другой состав или сетка — новая модель или отключение.</li>
+        </ul>
+      </div>
+      <div class="panel rise" style="margin-top:18px">
+        <div class="label">Воспроизведение</div>
+        <div class="num" style="font-size:14px; color: var(--ink-2); line-height:1.7">constellation-optimize benchmark<br>&nbsp;&nbsp;--budget 48 --seeds 20260911 7 42<br>&nbsp;&nbsp;--methods exact gp catboost</div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">3:40. Если спросят про ML: показываем только с benchmark — равный бюджет, три seed. GP выигрывает на коротком бюджете, CatBoost нет. Финальная рекомендация считается точным поиском.</aside>
+</section>
+
+<!-- 14. Recommendation -->
+<section class="slide" data-bg="dim">
+  <div class="eyebrow"><span class="crit"><b>Обоснованность рекомендаций</b> · выбор проекта</span><span class="pts">10 баллов</span></div>
+  <h2 class="rise">Рекомендация: вариант, который не платит номиналом за стресс</h2>
+  <div class="grid cols-3 rise" style="flex:1; align-content:start">
+    <div class="panel">
+      <div class="label">Конфигурация · exact Run, verified</div>
+      <table style="font-size:16px">
+        <thead><tr><th>Плоскость</th><th class="num">RAAN</th><th class="num">Фаза</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--p1)">P1</td><td class="num">191,64°</td><td class="num">169,13°</td></tr>
+          <tr><td style="color:var(--p2)">P2</td><td class="num">67,54°</td><td class="num">178,32°</td></tr>
+          <tr><td style="color:var(--p3)">P3</td><td class="num">124,36°</td><td class="num">94,64°</td></tr>
+        </tbody>
+      </table>
+      <p class="small" style="margin-top:12px">Ограничение поиска: каждый клиент в штатном режиме ≥ 90 %. Состав 48, пункты и условия связи — как в исходном проекте.</p>
+    </div>
+    <div class="panel">
+      <div class="label">Что выигрываем</div>
+      <ul class="clean" style="font-size:17px">
+        <li>Штатный режим: <b>96,94 / 98,89 / 99,31 %</b>, перерыв 8 → <b>2 мин</b> — ни один клиент не проигрывает.</li>
+        <li>ISL 2000 км: худший клиент <b>62,22 → 69,17 %</b>, C70 до 70,14 %, максимальный перерыв <b>178 → 80 мин</b>.</li>
+        <li>Цель 90 % <b>выполнена</b> в штатных условиях с запасом.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <div class="label">Честная цена и ограничения</div>
+      <ul class="clean" style="font-size:17px">
+        <li>Сценарий 10 отказов теряет ≈ 2 п.п. и 6 минут перерыва.</li>
+        <li>При ISL 2000 км 90 % <b>не достигаются</b> ни в одном из 300 вариантов: хорда 2700 км. Статус — target_not_found_within_budget, не «недостижимо».</li>
+        <li>Чувствительность к сетке: 69,17 % на 120 с, 66,60 % на 60 с, 65,73 % на 30 с — десятые доли не заявляем.</li>
+        <li>Модель геометрическая: без радиобюджета и пропускной способности; задержка — только нижняя оценка.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="panel rise" style="margin-top:18px">
+    <div class="label">Как повысить устойчивость — в порядке проверенности</div>
+    <p style="color:var(--ink-2)">1&nbsp;·&nbsp;Применить найденное фазирование как новую ревизию. &nbsp;2&nbsp;·&nbsp;Держать резерв для S19 / S33 / S44 / S45 — они бьют по всем трём направлениям. &nbsp;3&nbsp;·&nbsp;Для C65 нужен второй независимый вход: это следующий рычаг исследования, а не подмена дальности ISL или добавление шлюза.</p>
+  </div>
+  <aside class="notes">4:00. Итог для отраслевых экспертов: конкретные шесть углов, что выигрываем, что теряем, при каких условиях 90 % достижимы, и где границы модели. Все числа — из проверенных Run с hash.</aside>
+</section>
+
+<!-- 15. Data & delivery -->
+<section class="slide" data-bg="off">
+  <div class="eyebrow"><span class="crit"><b>Работа с входными данными</b> · документация и запуск</span><span class="pts">10 + 5 баллов</span></div>
+  <div class="split">
+    <div>
+      <h2 class="rise">Готовы к чужому JSON</h2>
+      <ul class="clean rise">
+        <li><b>Любой файл cosmo-A-1.0</b> создаёт новый проект: другое число плоскостей, аппаратов, пунктов, шаг и горизонт. Тесты гоняют конвейер от 2 до 60 аппаратов, 1–4 клиентов, 1–3 шлюзов, шаг 7 с, высоты 200–1200 км.</li>
+        <li><b>Ошибки адресные</b>: path · code · message. NaN, true вместо числа, дубликат ID, ссылка на несуществующую плоскость, горизонт не кратен шагу — каждая названа по полю.</li>
+        <li>Исходный JSON хранится без изменений; неизвестные поля сохраняются с пометкой «не участвует в модели».</li>
+        <li><b>Экспорт</b> cosmo-A-result-1.0: полный effective_scenario и ровно одна запись на пару «отсчёт — клиент», path: [] при отсутствии пути. Импорт → правка → расчёт → экспорт → импорт даёт те же метрики.</li>
+        <li>Паспорт эксперимента: hash входа, версия ядра, политика, seed, сетка, длительность. CSV по клиентам.</li>
+      </ul>
+      <div class="flow rise" style="margin-top:20px">
+        <span>docker compose up -d --build</span><i>→</i><span>localhost:8080</span><i>→</i><span>сценарии кейса уже загружены</span>
+      </div>
+    </div>
+    <div class="rise">
+      <div class="shot"><img src="img/01_projects.jpg" alt="Экран «Проекты»: исходные примеры и импорт сценария"><span class="cap">«Проекты» · исходные примеры только для чтения, импорт файла</span></div>
+    </div>
+  </div>
+  <aside class="notes">4:25. На стенде: импортировать посторонний файл другой размерности — расчёт проходит; загрузить битый — сообщение называет поле. Нажать «Выгрузить результат» и показать schema_version и записи маршрутов.</aside>
+</section>
+
+<!-- 16. Criteria map -->
+<section class="slide" data-bg="dim">
+  <div class="eyebrow"><span class="crit">Соответствие критериям оценки</span><span class="pts">100 баллов</span></div>
+  <h2 class="rise">Где жюри проверяет каждый критерий</h2>
+  <div class="crit-grid rise">
+    <div>
+      <div class="crit-head">Отраслевые эксперты · 50</div>
+      <div class="crit-row"><span class="pts">15</span><div><div class="name">Проектирование и сравнение конфигураций</div><div class="where">Конструктор: очередь, RAAN, фаза, отказы · экран «Сравнение» · рекомендация по клиентам</div></div></div>
+      <div class="crit-row"><span class="pts">10</span><div><div class="name">Анализ устойчивости</div><div class="where">Причины разрывов · контрфактическая проверка · N−1 · резерв · стресс-набор</div></div></div>
+      <div class="crit-row"><span class="pts">10</span><div><div class="name">Обоснованность рекомендаций</div><div class="where">Только exact Run · условия 90 % · честная цена · границы модели · инженерные выводы с переходом к расчёту</div></div></div>
+      <div class="crit-row"><span class="pts">10</span><div><div class="name">Удобство использования</div><div class="where">Сценарий жюри без JSON · таймлайн и воспроизведение · 3D / 2D / таблица · клавиатура</div></div></div>
+      <div class="crit-row"><span class="pts">5</span><div><div class="name">Презентация решения</div><div class="where">Работающий стенд · воспроизводимый прогон за 5 минут</div></div></div>
+    </div>
+    <div>
+      <div class="crit-head">Технические эксперты · 50</div>
+      <div class="crit-row"><span class="pts">15</span><div><div class="name">Корректность расчётов</div><div class="where">12 контрольных значений · сверка с geometry.py 10⁻¹³ км · граничные тесты T03–T07</div></div></div>
+      <div class="crit-row"><span class="pts">15</span><div><div class="name">Алгоритмы маршрутизации</div><div class="where">Multi-source BFS · запрет наземного транзита · три политики · независимый валидатор 2160 записей</div></div></div>
+      <div class="crit-row"><span class="pts">10</span><div><div class="name">Работа с входными данными</div><div class="where">Импорт любой размерности · адресные ошибки · экспорт cosmo-A-result-1.0 · цикл реимпорта</div></div></div>
+      <div class="crit-row"><span class="pts">5</span><div><div class="name">Качество кода</div><div class="where">Ядро без FastAPI и UI · типы · 234 теста · ADR × 9 · реестр требований</div></div></div>
+      <div class="crit-row"><span class="pts">5</span><div><div class="name">Документация и запуск</div><div class="where">README + START · docker compose одной командой · сценарии проверки docs/acceptance.md</div></div></div>
+    </div>
+  </div>
+  <aside class="notes">4:45. Один взгляд на критерии — и по каждому названо конкретное место в сервисе.</aside>
+</section>
+
+<!-- 17. Final -->
+<section class="slide final" data-bg="full">
+  <div class="split" style="align-items:center">
+    <div>
+      <div class="eyebrow rise">Стенд открыт для жюри</div>
+      <h2 class="rise">Проверьте любое число сами</h2>
+      <p class="lead rise"><a href="https://lin-lini-constellation-resilience-lab-55b9.twc1.net/" target="_blank" rel="noopener">lin-lini-constellation-resilience-lab-55b9.twc1.net</a></p>
+      <ul class="clean rise">
+        <li>Откройте «01 Полная группировка» → «Рассчитать» → 96,67 / 98,75 / 98,89 %.</li>
+        <li>Загрузите свой сценарий cosmo-A-1.0 — размеры не зашиты.</li>
+        <li>Дальше: карта фаз RAAN × phase, маршрутный сертификат отсчёта, what-if профиль по дальности ISL — отдельно от основной рекомендации.</li>
+      </ul>
+    </div>
+    <div class="rise" style="display:flex; justify-content:center">
+      <div class="qr" id="qr" aria-label="QR-код со ссылкой на стенд"></div>
+    </div>
+  </div>
+  <aside class="notes">5:00. Закончить конкретикой: выбранная конфигурация, оставшиеся риски (C65 с единственным входом, ISL 2000), план проверки физической реализуемости — радиобюджет и стоимость выведения не в модели.</aside>
+</section>
+
+</div></div>
+
+<div id="hud"><i></i></div>
+<div id="brand"><b>Constellation Resilience Lab</b> · КосмоХакатон 2026</div>
+<div id="counter"><button type="button" id="prev" aria-label="Предыдущий слайд">←</button><span id="cnt">1 / 18</span><button type="button" id="next" aria-label="Следующий слайд">→</button></div>
+<div id="notes"><div class="t">Заметки докладчика</div><div id="notesBody"></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+/* ============ Constellation simulation (formulas from the data description) ============ */
+const DEG = Math.PI / 180;
+const R_E = 6371, MU = 398600.435507, T_E = 86164.09054;
+const SCEN = {
+  h: 550, inc: 87, earth0: 12, minEl: 10,
+  planes: [{ id: 'P1', raan: 0, phase: 0 }, { id: 'P2', raan: 60, phase: 7.5 }, { id: 'P3', raan: 120, phase: 15 }],
+  sites: [
+    { id: 'G_MUR', role: 'gateway', lat: 68.97, lon: 33.07 },
+    { id: 'C65', role: 'client', lat: 65, lon: 60 },
+    { id: 'C70', role: 'client', lat: 70, lon: 90 },
+    { id: 'C72', role: 'client', lat: 72, lon: 130 },
+  ],
+};
+const PLANE_COLORS = ['#7cc4ff', '#5ddcb0', '#ffb3a0'];
+
+class Sim {
+  constructor(canvas, opts) {
+    this.c = canvas; this.ctx = canvas.getContext('2d');
+    this.o = Object.assign({ range: 3000, timeScale: 90, tilt: 42, azSpeed: 0.05, showOrbits: true, showGrid: true, showRoutes: true, labels: true, fit: 0.9, stats: null, az0: 0.4 }, opts);
+    this.r = R_E + SCEN.h; this.n = Math.sqrt(MU / (this.r ** 3));
+    this.sats = [];
+    SCEN.planes.forEach((p, pi) => { for (let k = 0; k < 16; k++) this.sats.push({ id: `S${String(pi * 16 + k + 1).padStart(2, '0')}`, plane: pi, slot: k * 22.5 }); });
+    this.t = 0; this.az = this.o.az0; this.last = null; this.running = false;
+    this.pos = new Float64Array(this.sats.length * 3);
+    this.resize();
+  }
+  resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const w = this.c.clientWidth || this.c.parentElement.clientWidth, h = this.c.clientHeight || this.c.parentElement.clientHeight;
+    if (!w || !h) return;
+    this.c.width = Math.round(w * dpr); this.c.height = Math.round(h * dpr);
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0); this.w = w; this.h = h;
+  }
+  start() { if (this.running) return; this.running = true; this.last = null; const loop = (ts) => { if (!this.running) return; this.frame(ts); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+  stop() { this.running = false; }
+
+  /* --- geometry, exactly as in the data description --- */
+  satPos(i, t) {
+    const s = this.sats[i], p = SCEN.planes[s.plane];
+    const O = p.raan * DEG, inc = SCEN.inc * DEG, u = (s.slot + p.phase) * DEG + this.n * t;
+    const cu = Math.cos(u), su = Math.sin(u), cO = Math.cos(O), sO = Math.sin(O), ci = Math.cos(inc);
+    return [this.r * (cO * cu - sO * su * ci), this.r * (sO * cu + cO * su * ci), this.r * su * Math.sin(inc)];
+  }
+  theta(t) { return SCEN.earth0 * DEG + 2 * Math.PI * t / T_E; }
+  groundInertial(site, th) {
+    const la = site.lat * DEG, lo = site.lon * DEG;
+    const xe = R_E * Math.cos(la) * Math.cos(lo), ye = R_E * Math.cos(la) * Math.sin(lo), ze = R_E * Math.sin(la);
+    return [Math.cos(th) * xe - Math.sin(th) * ye, Math.sin(th) * xe + Math.cos(th) * ye, ze];
+  }
+  elevation(s, g) {
+    const d = [s[0] - g[0], s[1] - g[1], s[2] - g[2]];
+    const nd = Math.hypot(...d);
+    const v = (d[0] * g[0] + d[1] * g[1] + d[2] * g[2]) / (nd * R_E);
+    return Math.asin(Math.max(-1, Math.min(1, v))) / DEG;
+  }
+  isl(a, b, L) {
+    const d = [b[0] - a[0], b[1] - a[1], b[2] - a[2]];
+    const dd = d[0] * d[0] + d[1] * d[1] + d[2] * d[2];
+    if (Math.sqrt(dd) >= L) return false;
+    let q = dd > 0 ? -(a[0] * d[0] + a[1] * d[1] + a[2] * d[2]) / dd : 0; q = Math.max(0, Math.min(1, q));
+    const px = a[0] + q * d[0], py = a[1] + q * d[1], pz = a[2] + q * d[2];
+    return Math.sqrt(px * px + py * py + pz * pz) > R_E;
+  }
+  /* --- camera --- */
+  proj(p) {
+    const ca = Math.cos(this.az), sa = Math.sin(this.az);
+    const x = ca * p[0] - sa * p[1], y = sa * p[0] + ca * p[1], z = p[2];
+    const a = this.o.tilt * DEG, cy = Math.cos(a), sy = Math.sin(a);
+    const yy = y * cy + z * sy, zz = -y * sy + z * cy;
+    return { x: this.cx + x * this.s, y: this.cy - zz * this.s, d: yy, r2: x * x + zz * zz };
+  }
+  visible(q) { return q.d >= 0 || q.r2 > R_E * R_E; }
+
+  frame(ts) {
+    if (this.last == null) this.last = ts;
+    const dt = Math.min(0.1, (ts - this.last) / 1000); this.last = ts;
+    this.t += dt * this.o.timeScale; this.az += dt * this.o.azSpeed;
+    if (this.c.clientWidth !== this.w || this.c.clientHeight !== this.h) this.resize();
+    const ctx = this.ctx, w = this.w, h = this.h;
+    this.s = (Math.min(w, h) * this.o.fit) / (2 * (this.r + 400));
+    this.cx = w / 2 + (this.o.dx || 0); this.cy = h / 2 + (this.o.dy || 0);
+    ctx.clearRect(0, 0, w, h);
+
+    const th = this.theta(this.t);
+    const P = this.sats.map((_, i) => this.satPos(i, this.t));
+    const G = SCEN.sites.map((s) => this.groundInertial(s, th));
+
+    // contacts
+    const N = P.length, L = this.o.range, adj = Array.from({ length: N }, () => []);
+    let inPlane = 0, cross = 0; const links = [];
+    for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) if (this.isl(P[i], P[j], L)) {
+      adj[i].push(j); adj[j].push(i);
+      const same = this.sats[i].plane === this.sats[j].plane; same ? inPlane++ : cross++; links.push([i, j, same]);
+    }
+    const gw = SCEN.sites.map((s, k) => s.role === 'gateway' ? k : -1).filter((k) => k >= 0);
+    const clients = SCEN.sites.map((s, k) => s.role === 'client' ? k : -1).filter((k) => k >= 0);
+    const gvis = Array.from({ length: N }, (_, i) => gw.some((k) => this.elevation(P[i], G[k]) >= SCEN.minEl));
+    // multi-source BFS from gateway-visible satellites
+    const dist = new Int32Array(N).fill(-1), par = new Int32Array(N).fill(-1); const q = [];
+    for (let i = 0; i < N; i++) if (gvis[i]) { dist[i] = 1; q.push(i); }
+    for (let qi = 0; qi < q.length; qi++) { const u = q[qi]; for (const v of adj[u]) if (dist[v] < 0) { dist[v] = dist[u] + 1; par[v] = u; q.push(v); } }
+    const routes = [];
+    for (const ck of clients) {
+      let best = -1;
+      for (let i = 0; i < N; i++) if (dist[i] > 0 && this.elevation(P[i], G[ck]) >= SCEN.minEl && (best < 0 || dist[i] < dist[best])) best = i;
+      if (best < 0) { routes.push(null); continue; }
+      const path = []; let u = best; while (u >= 0) { path.push(u); u = par[u]; } routes.push({ client: ck, path });
+    }
+
+    // --- draw ---
+    const Rs = R_E * this.s;
+    // earth body
+    const grad = ctx.createRadialGradient(this.cx - Rs * 0.35, this.cy - Rs * 0.4, Rs * 0.1, this.cx, this.cy, Rs);
+    grad.addColorStop(0, '#16284a'); grad.addColorStop(0.7, '#0b1730'); grad.addColorStop(1, '#070d1a');
+    ctx.beginPath(); ctx.arc(this.cx, this.cy, Rs, 0, Math.PI * 2); ctx.fillStyle = grad; ctx.fill();
+    ctx.strokeStyle = 'rgba(124,196,255,0.35)'; ctx.lineWidth = 1; ctx.stroke();
+    // atmosphere glow
+    const glow = ctx.createRadialGradient(this.cx, this.cy, Rs, this.cx, this.cy, Rs * 1.12);
+    glow.addColorStop(0, 'rgba(124,196,255,0.18)'); glow.addColorStop(1, 'rgba(124,196,255,0)');
+    ctx.beginPath(); ctx.arc(this.cx, this.cy, Rs * 1.12, 0, Math.PI * 2); ctx.fillStyle = glow; ctx.fill();
+
+    if (this.o.showGrid) {
+      ctx.lineWidth = 1;
+      const polyline = (pts, style) => { ctx.strokeStyle = style; ctx.beginPath(); let pen = false; for (const p of pts) { const qq = this.proj(p); if (qq.d < 0) { pen = false; continue; } if (!pen) { ctx.moveTo(qq.x, qq.y); pen = true; } else ctx.lineTo(qq.x, qq.y); } ctx.stroke(); };
+      for (const lat of [-60, -30, 0, 30, 60, 75]) {
+        const pts = []; for (let lon = 0; lon <= 360; lon += 4) pts.push(this.groundInertial({ lat, lon }, th));
+        polyline(pts, lat === 60 ? 'rgba(124,196,255,0.45)' : 'rgba(124,196,255,0.10)');
+      }
+      for (let lon = 0; lon < 360; lon += 30) {
+        const pts = []; for (let lat = -90; lat <= 90; lat += 4) pts.push(this.groundInertial({ lat, lon }, th));
+        polyline(pts, 'rgba(124,196,255,0.10)');
+      }
+    }
+    if (this.o.showOrbits) {
+      ctx.setLineDash([3, 6]); ctx.lineWidth = 1;
+      SCEN.planes.forEach((p, pi) => {
+        ctx.strokeStyle = PLANE_COLORS[pi] + '55'; ctx.beginPath(); let pen = false;
+        for (let u = 0; u <= 360; u += 3) {
+          const O = p.raan * DEG, inc = SCEN.inc * DEG, uu = u * DEG;
+          const pt = [this.r * (Math.cos(O) * Math.cos(uu) - Math.sin(O) * Math.sin(uu) * Math.cos(inc)), this.r * (Math.sin(O) * Math.cos(uu) + Math.cos(O) * Math.sin(uu) * Math.cos(inc)), this.r * Math.sin(uu) * Math.sin(inc)];
+          const qq = this.proj(pt); if (!this.visible(qq)) { pen = false; continue; }
+          if (!pen) { ctx.moveTo(qq.x, qq.y); pen = true; } else ctx.lineTo(qq.x, qq.y);
+        }
+        ctx.stroke();
+      });
+      ctx.setLineDash([]);
+    }
+    const SP = P.map((p) => this.proj(p)), SG = G.map((g) => this.proj(g));
+    // ISL links
+    for (const [i, j, same] of links) {
+      if (!this.visible(SP[i]) || !this.visible(SP[j])) continue;
+      ctx.strokeStyle = same ? 'rgba(124,196,255,0.55)' : 'rgba(255,179,160,0.42)'; ctx.lineWidth = same ? 1.2 : 1;
+      ctx.beginPath(); ctx.moveTo(SP[i].x, SP[i].y); ctx.lineTo(SP[j].x, SP[j].y); ctx.stroke();
+    }
+    // routes
+    if (this.o.showRoutes) for (const rt of routes) {
+      if (!rt) continue;
+      const pts = [SG[rt.client], ...rt.path.map((i) => SP[i]), SG[gw[0]]];
+      ctx.lineWidth = 2.6; ctx.strokeStyle = '#ffffff'; ctx.shadowColor = '#7cc4ff'; ctx.shadowBlur = 12;
+      ctx.beginPath(); pts.forEach((p, k) => k ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+    // satellites
+    P.forEach((p, i) => {
+      const qq = SP[i]; if (!this.visible(qq)) return;
+      const col = PLANE_COLORS[this.sats[i].plane];
+      ctx.fillStyle = col; ctx.beginPath(); ctx.arc(qq.x, qq.y, gvis[i] ? 3.4 : 2.6, 0, Math.PI * 2); ctx.fill();
+      if (gvis[i]) { ctx.strokeStyle = col + '88'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(qq.x, qq.y, 7, 0, Math.PI * 2); ctx.stroke(); }
+    });
+    // ground sites
+    ctx.font = '12px "JetBrains Mono", monospace';
+    SCEN.sites.forEach((s, k) => {
+      const qq = SG[k]; if (qq.d < 0) return;
+      const isG = s.role === 'gateway'; ctx.fillStyle = isG ? '#f4b64a' : '#7cc4ff';
+      ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 10;
+      ctx.beginPath();
+      if (isG) { ctx.moveTo(qq.x, qq.y - 6); ctx.lineTo(qq.x + 6, qq.y); ctx.lineTo(qq.x, qq.y + 6); ctx.lineTo(qq.x - 6, qq.y); ctx.closePath(); }
+      else ctx.arc(qq.x, qq.y, 4.5, 0, Math.PI * 2);
+      ctx.fill(); ctx.shadowBlur = 0;
+      if (this.o.labels) { ctx.fillStyle = 'rgba(234,240,250,0.85)'; ctx.fillText(s.id, qq.x + 9, qq.y + 4); }
+    });
+    if (this.o.stats) this.o.stats({ inPlane, cross, routes: routes.filter(Boolean).length, t: this.t });
+  }
+}
+
+/* ============ Deck ============ */
+const slides = [...document.querySelectorAll('.slide')];
+const stage = document.getElementById('stage');
+const bg = document.getElementById('bg');
+const bgSim = new Sim(bg, { range: 3000, timeScale: 90, tilt: 40, azSpeed: 0.045, fit: 1.25, dx: 240, dy: -60, labels: true, az0: 0.6 });
+let islSim = null;
+let cur = -1;
+
+function fit() {
+  const s = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
+  stage.style.transform = `scale(${s})`;
+  bgSim.resize(); if (islSim) islSim.resize();
+}
+window.addEventListener('resize', fit); fit();
+
+function countUp(el) {
+  const target = parseFloat(el.dataset.count), dec = +(el.dataset.dec || 0);
+  const t0 = performance.now(), dur = 1400;
+  const tick = (now) => { const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3); el.textContent = (target * e).toFixed(dec).replace('.', ','); if (k < 1) requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+}
+
+function go(n) {
+  n = Math.max(0, Math.min(slides.length - 1, n));
+  if (n === cur) return;
+  const prev = slides[cur], next = slides[n];
+  if (prev) { prev.classList.remove('active'); prev.classList.add('leaving'); setTimeout(() => prev.classList.remove('leaving'), 700); }
+  next.classList.add('active'); cur = n;
+  bg.className = next.dataset.bg || 'dim';
+  document.getElementById('cnt').textContent = `${n + 1} / ${slides.length}`;
+  document.querySelector('#hud i').style.width = `${((n + 1) / slides.length) * 100}%`;
+  next.querySelectorAll('[data-count]').forEach(countUp);
+  location.hash = `#${n + 1}`;
+  document.getElementById('notesBody').innerHTML = (next.querySelector('.notes') || {}).innerHTML || '—';
+  // simulations: background runs only when it is visible enough
+  if (next.dataset.sim === 'isl') { if (!islSim) initIsl(); islSim.resize(); islSim.start(); bgSim.stop(); }
+  else { if (islSim) islSim.stop(); bgSim.start(); }
+}
+function initIsl() {
+  const canvas = document.getElementById('islCanvas');
+  islSim = new Sim(canvas, { range: 3000, timeScale: 60, tilt: 38, azSpeed: 0.06, fit: 0.92, labels: true, showRoutes: true, az0: 0.9,
+    stats: ({ inPlane, cross, routes }) => { stIn.textContent = inPlane; stX.textContent = cross; stR.textContent = routes; } });
+  document.querySelectorAll('[data-range]').forEach((b) => b.addEventListener('click', () => {
+    document.querySelectorAll('[data-range]').forEach((x) => x.classList.toggle('on', x === b));
+    islSim.o.range = +b.dataset.range;
+  }));
+}
+document.getElementById('next').onclick = () => go(cur + 1);
+document.getElementById('prev').onclick = () => go(cur - 1);
+document.addEventListener('keydown', (e) => {
+  if (e.target.matches('input, textarea')) return;
+  if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+  else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); go(cur - 1); }
+  else if (e.key === 'Home') go(0);
+  else if (e.key === 'End') go(slides.length - 1);
+  else if (e.key.toLowerCase() === 'n' || e.key.toLowerCase() === 'т') document.getElementById('notes').classList.toggle('on');
+  else if (e.key.toLowerCase() === 'f' || e.key.toLowerCase() === 'а') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen(); }
+});
+// click to advance (not on controls / links / images that should stay)
+stage.addEventListener('click', (e) => { if (e.target.closest('button, a, .toggle, .isl-canvas')) return; go(cur + 1); });
+// touch swipe
+let tx = null;
+document.addEventListener('touchstart', (e) => { tx = e.touches[0].clientX; }, { passive: true });
+document.addEventListener('touchend', (e) => { if (tx == null) return; const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 50) go(cur + (dx < 0 ? 1 : -1)); tx = null; });
+// QR
+try { new QRCode(document.getElementById('qr'), { text: 'https://lin-lini-constellation-resilience-lab-55b9.twc1.net/', width: 172, height: 172, colorDark: '#06111f', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M }); } catch (e) {}
+window.addEventListener('hashchange', () => { const n = (parseInt(location.hash.slice(1), 10) || 1) - 1; if (n !== cur) go(n); });
+// start
+const startAt = Math.max(0, Math.min(slides.length - 1, (parseInt(location.hash.slice(1), 10) || 1) - 1));
+go(startAt);
+</script>
