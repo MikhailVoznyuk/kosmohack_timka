@@ -233,6 +233,15 @@
   .value .panel .k { font: 600 12px var(--mono); color: var(--accent); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; display: block; }
   .value .panel h3 { font-size: 20px; margin-bottom: 6px; }
   .value .panel p { font-size: 15px; color: var(--ink-2); }
+  /* team */
+  .team { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; align-content: start; margin-top: 28px; }
+  .team .panel { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 30px 18px 26px; }
+  .team .ava { width: 220px; height: 220px; border-radius: 50%; padding: 5px; border: 1.5px solid var(--c); background: var(--panel); }
+  .team .ava img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+  .team h3 { font-size: 26px; margin: 24px 0 6px; }
+  .team .fn { font-size: 16px; color: var(--ink-2); }
+  .team .role { margin-top: 16px; font: 600 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--c); border: 1px solid var(--c); border-radius: 999px; padding: 6px 14px; }
+  .team-lead { margin-top: 30px; font-size: 17px; color: var(--ink-2); }
   .big-fig { flex: 1; min-height: 0; display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 40px; align-items: start; }
   ul.check { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
   ul.check li { display: grid; grid-template-columns: 26px 1fr; gap: 12px; align-items: start; color: var(--ink-2); font-size: 18px; line-height: 1.4; }
@@ -361,6 +370,7 @@
   .notes { display: none; }
   #help { position: fixed; top: 14px; right: 26px; font-family: var(--mono); font-size: 12px; color: var(--ink-3); z-index: 5; opacity: .8; }
   body.print #help, body.print #counter, body.print #hud { display: none; }
+  body.bgonly #stage, body.bgonly #help, body.bgonly #counter, body.bgonly #hud, body.bgonly #brand { display: none; }
   body.print .slide, body.print .slide .rise, body.print .bar i { transition: none !important; }
 </style>
 
@@ -372,7 +382,7 @@
 
 <!-- 1. TITLE -->
 <section class="slide title" data-bg="full">
-  <div class="eyebrow rise">КосмоХакатон 2026 · Проектирование устойчивой спутниковой группировки</div>
+  <div class="eyebrow rise">Команда <b style="color:var(--ink)">ITимка</b> · КосмоХакатон 2026 · Проектирование устойчивой спутниковой группировки</div>
   <h1 class="rise">Constellation <span>Resilience</span> Lab</h1>
   <p class="sub rise">Рабочее место инженера группировки: считает доступность связи для северных пунктов, объясняет каждый перерыв, подбирает проверенную конфигурацию и показывает, сколько она стоит.</p>
   <div class="chips rise">
@@ -382,7 +392,7 @@
     <span class="chip">шлюз <b>Мурманск</b> · клиенты C65 · C70 · C72</span>
   </div>
   <div class="live rise"><span class="dot"></span>На фоне — живой расчёт по формулам «Описания данных»: орбиты, межспутниковые линии и маршруты до шлюза перестраиваются на каждом кадре.</div>
-  <aside class="notes"><b>0:00</b> Здравствуйте. Мы — команда Constellation Resilience Lab. Мы сделали рабочее место инженера спутниковой группировки: оно считает доступность связи для северных пунктов, объясняет каждый перерыв, подбирает конфигурацию и показывает, сколько она стоит. На фоне — наша же модель, она считается прямо сейчас.</aside>
+  <aside class="notes"><b>0:00</b> Здравствуйте. Мы — команда ITимка, наш проект — Constellation Resilience Lab. Мы сделали рабочее место инженера спутниковой группировки: оно считает доступность связи для северных пунктов, объясняет каждый перерыв, подбирает конфигурацию и показывает, сколько она стоит. На фоне — наша же модель, она считается прямо сейчас.</aside>
 </section>
 
 <!-- 2. THESIS -->
@@ -943,7 +953,21 @@
   <aside class="notes"><b>3:52</b> Итог: решения о группировке — на расчётах, а не на ощущениях.</aside>
 </section>
 
-<!-- 22. FINAL -->
+<!-- 22. TEAM -->
+<section class="slide" data-bg="dim">
+  <div class="eyebrow"><span class="crit chapter">Команда</span><span class="pts">кто сделал сервис</span></div>
+  <h2 class="rise">Команда ITимка</h2>
+  <div class="team rise">
+    <div class="panel" style="--c:var(--accent)"><div class="ava"><img src="img/team/polina.jpg" alt="Полина Чудинова"></div><h3>Чудинова</h3><div class="fn">Полина Александровна</div><div class="role">Капитан · Backend</div></div>
+    <div class="panel" style="--c:var(--good)"><div class="ava"><img src="img/team/voznyuk.jpg" alt="Михаил Вознюк"></div><h3>Вознюк</h3><div class="fn">Михаил Владимирович</div><div class="role">Frontend</div></div>
+    <div class="panel" style="--c:var(--warn)"><div class="ava"><img src="img/team/andrey.jpg" alt="Андрей Редин"></div><h3>Редин</h3><div class="fn">Андрей Алексеевич</div><div class="role">DevOps</div></div>
+    <div class="panel" style="--c:var(--p3)"><div class="ava"><img src="img/team/mikhailvas.jpg" alt="Михаил Василевич"></div><h3>Василевич</h3><div class="fn">Михаил Константинович</div><div class="role">Дизайн</div></div>
+  </div>
+  <p class="team-lead rise">Четыре человека, один сервис: расчётное ядро и API, интерфейс конструктора и сцены, развёртывание стенда, визуальный язык продукта.</p>
+  <aside class="notes"><b>3:55</b> Команда ITимка: Полина Чудинова — капитан и backend, Михаил Вознюк — frontend, Андрей Редин — DevOps, Михаил Василевич — дизайн.</aside>
+</section>
+
+<!-- 23. FINAL -->
 <section class="slide final" data-bg="full">
   <div class="split" style="align-items:center">
     <div>
@@ -955,16 +979,17 @@
         <li>Загрузите свой сценарий — размеры и идентификаторы не зашиты.</li>
         <li>Дальше: карта фаз RAAN × phase, маршрутный сертификат отсчёта, исследование дальности ISL отдельным профилем.</li>
       </ul>
+      <div class="eyebrow rise" style="margin-top:34px">Команда <b style="color:var(--ink)">ITимка</b> · КосмоХакатон 2026</div>
     </div>
     <div class="rise" style="display:flex; justify-content:center"><div class="qr" id="qr" aria-label="QR-код со ссылкой на стенд"></div></div>
   </div>
-  <aside class="notes"><b>3:57</b> Стенд открыт — проверьте любое число сами. Спасибо.</aside>
+  <aside class="notes"><b>3:57</b> Стенд открыт — проверьте любое число сами. Команда ITимка, спасибо.</aside>
 </section>
 
 </div></div>
 
 <div id="hud"><i></i></div>
-<div id="brand"><b>Constellation Resilience Lab</b> · КосмоХакатон 2026</div>
+<div id="brand"><b>Constellation Resilience Lab</b> · команда ITимка · КосмоХакатон 2026</div>
 <div id="counter"><button type="button" id="prev" aria-label="Предыдущий слайд">←</button><span id="cnt">1 / 23</span><button type="button" id="next" aria-label="Следующий слайд">→</button></div>
 
 <div id="pv">
@@ -1169,6 +1194,7 @@ class Sim {
 /* ============ Presenter window (press N in the deck) ============ */
 const IS_PRESENTER = new URLSearchParams(location.search).has('presenter');
 if (new URLSearchParams(location.search).has('print')) document.body.classList.add('print');
+if (new URLSearchParams(location.search).has('bgonly')) document.body.classList.add('bgonly');
 const channel = ('BroadcastChannel' in window) ? new BroadcastChannel('crl-deck') : null;
 /* ============ Deck ============ */
 const slides = [...document.querySelectorAll('.slide')];
