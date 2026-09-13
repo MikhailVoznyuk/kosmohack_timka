@@ -253,6 +253,13 @@
   .algos-foot { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; }
   .algos-foot span { font: 500 12px var(--mono); letter-spacing: .02em; color: var(--ink-2); border: 1px solid var(--line); border-radius: 999px; padding: 7px 14px; background: rgba(10,17,32,.7); }
   .algos-foot span b { color: var(--accent); font-weight: 600; }
+  /* search protocol */
+  .proto { padding: 18px 22px; }
+  .proto table { font-size: 15px; margin-top: 12px; }
+  .proto th, .proto td { padding: 8px 10px; }
+  .proto-foot { margin-top: 14px; display: flex; flex-direction: column; gap: 7px; font-size: 13px; color: var(--ink-2); }
+  .proto-foot .k { font: 500 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); margin-right: 8px; }
+  .proto-foot code { font-family: var(--mono); font-size: 12px; color: var(--accent); }
   .big-fig { flex: 1; min-height: 0; display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 40px; align-items: start; }
   ul.check { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
   ul.check li { display: grid; grid-template-columns: 26px 1fr; gap: 12px; align-items: start; color: var(--ink-2); font-size: 18px; line-height: 1.4; }
@@ -834,7 +841,23 @@
 <section class="slide" data-bg="dim">
   <div class="eyebrow"><span class="crit extra">Сверх ожиданий</span><span class="pts">автоподбор конфигурации</span></div>
   <div class="hero">
-    <figure class="fig rise"><div class="frame"><img src="img/51_optimization_result.jpg" alt="Экран «Оптимизация»: кандидаты, проверенные точным расчётом"></div><figcaption><b>Экран «Оптимизация».</b> Кандидаты с пометкой «проверен расчётом», параметры плоскостей, применение выбранного варианта новой версией проекта</figcaption></figure>
+    <div class="panel proto rise">
+      <div class="crit-head">Протокол полного поиска · сценарий 01 · 300 точных расчётов · seed 20260911</div>
+      <table>
+        <thead><tr><th>Метод</th><th class="num">Худший клиент</th><th class="num">Макс. перерыв</th><th class="num">Время</th></tr></thead>
+        <tbody>
+          <tr><td class="muted">Базовый вариант из данных</td><td class="num">96,67 %</td><td class="num">8 мин</td><td class="num muted">—</td></tr>
+          <tr><td>Точный поиск · Соболь → DE</td><td class="num">98,33 %</td><td class="num">4 мин</td><td class="num">111 с</td></tr>
+          <tr><td>Суррогат · гауссовский процесс</td><td class="num">98,33 %</td><td class="num">2 мин</td><td class="num">122 с</td></tr>
+          <tr><td><b>Суррогат · CatBoost</b> — подтверждён точным расчётом</td><td class="num good"><b>99,17 %</b></td><td class="num good">2 мин</td><td class="num">142 с</td></tr>
+        </tbody>
+      </table>
+      <div class="proto-foot">
+        <div><span class="k">Найденные углы</span> P1 · RAAN 55,0° · фаза 11,5° &nbsp; P2 · 120,0° · 177,2° &nbsp; P3 · 353,8° · 68,8°</div>
+        <div><span class="k">Проверка на мелкой сетке</span> 60 с → 98,68 % · 30 с → 98,61 % — ориентир 90 % держится</div>
+        <div><span class="k">Воспроизведение</span> <code>constellation-optimize search --scenario 01_full_constellation.json --budget 300 --seed 20260911</code> · docs/reports/full_search_nominal.json</div>
+      </div>
+    </div>
     <div>
       <h2 class="rise">Подбор с проверкой каждого кандидата</h2>
       <ul class="check rise">
